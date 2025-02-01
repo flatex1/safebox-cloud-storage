@@ -1,6 +1,8 @@
 import { ConvexError, v } from "convex/values";
 import { MutationCtx, QueryCtx, mutation, query } from "./_generated/server";
 import { getUser } from "./users";
+import { fileTypes } from "./schema";
+import { Id } from "./_generated/dataModel";
 
 export const generateUploadUrl = mutation(async (ctx) => {
   const identity = await ctx.auth.getUserIdentity();
@@ -10,6 +12,27 @@ export const generateUploadUrl = mutation(async (ctx) => {
   }
 
   return await ctx.storage.generateUploadUrl();
+});
+
+export const getFileUrl = query({
+  args: {
+    fileId: v.id("_storage"),
+  },
+  async handler(ctx, args) {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      throw new ConvexError("Ограничено в доступе");
+    }
+
+    const fileUrl = await ctx.storage.getUrl(args.fileId);
+
+    if (!fileUrl) {
+      throw new ConvexError("Файл не найден");
+    }
+
+    return fileUrl;
+  },
 });
 
 async function hasAccessToOrg(
@@ -28,6 +51,7 @@ async function hasAccessToOrg(
 export const createFile = mutation({
   args: {
     name: v.string(),
+    type: fileTypes,
     fileId: v.id("_storage"),
     orgId: v.string()
   },
@@ -51,6 +75,7 @@ export const createFile = mutation({
 
     await ctx.db.insert("files", {
       name: args.name,
+      type: args.type,
       fileId: args.fileId,
       orgId: args.orgId
     });

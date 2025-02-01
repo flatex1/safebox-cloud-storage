@@ -21,6 +21,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { Loader2 } from "lucide-react";
+import { Doc } from "@/convex/_generated/dataModel";
 
 const formSchema = z.object({
   title: z.string().min(1).max(200),
@@ -61,8 +62,18 @@ export function UploadButton() {
 
       const { storageId } = await result.json();
 
+      const types: Record<string, Doc<"files">["type"]> = {
+        "image/png": "image",
+        "image/jpeg": "image",
+        "image/jpg": "image",
+        "image/gif": "image",
+        "image/webp": "image",
+        "application/pdf": "pdf",
+        "text/csv": "csv",
+      };
+
       try {
-        await createFile({ name: values.title, fileId: storageId, orgId });
+        await createFile({ name: values.title, fileId: storageId, orgId, type: types[fileType] });
 
         form.reset();
 
@@ -81,7 +92,6 @@ export function UploadButton() {
       }
     }
   }
-
   let orgId: string | undefined = undefined;
   if (organization.isLoaded && user.isLoaded) {
     orgId = organization.organization?.id ?? user.user?.id;
