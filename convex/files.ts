@@ -13,8 +13,8 @@ export const generateUploadUrl = mutation(async (ctx) => {
 });
 
 async function hasAccessToOrg(
-  ctx: QueryCtx | MutationCtx, 
-  tokenIdentifier: string, 
+  ctx: QueryCtx | MutationCtx,
+  tokenIdentifier: string,
   orgId: string
 ) {
   const user = await getUser(ctx, tokenIdentifier);
@@ -22,7 +22,7 @@ async function hasAccessToOrg(
   const hasAccess =
     user.orgIds.includes(orgId) || user.tokenIdentifier.includes(orgId);
 
-    return hasAccess;
+  return hasAccess;
 }
 
 export const createFile = mutation({
@@ -32,7 +32,7 @@ export const createFile = mutation({
     orgId: v.string()
   },
   async handler(ctx, args) {
-    
+
     const identity = await ctx.auth.getUserIdentity();
 
     if (!identity) {
@@ -57,30 +57,61 @@ export const createFile = mutation({
   },
 });
 
-  export const getFiles = query({
-    args: {
-        orgId: v.string()
-    },
-    async handler(ctx, args) {
-        const identity = await ctx.auth.getUserIdentity();
+export const getFiles = query({
+  args: {
+    orgId: v.string()
+  },
+  async handler(ctx, args) {
+    const identity = await ctx.auth.getUserIdentity();
 
-        if (!identity) {
-            return [];
-        }
+    if (!identity) {
+      return [];
+    }
 
-        const hasAccess = await hasAccessToOrg(
-          ctx,
-          identity.tokenIdentifier,
-          args.orgId
-        );
+    const hasAccess = await hasAccessToOrg(
+      ctx,
+      identity.tokenIdentifier,
+      args.orgId
+    );
 
-        if (!hasAccess) {
-          return [];
-      }
+    if (!hasAccess) {
+      return [];
+    }
 
-        return ctx.db
-        .query('files')
-        .withIndex("by_orgId", (q) => q.eq("orgId", args.orgId))
-        .collect();
-    },
-  });
+    return ctx.db
+      .query('files')
+      .withIndex("by_orgId", (q) => q.eq("orgId", args.orgId))
+      .collect();
+  },
+});
+
+export const deleteFile = mutation({
+  args: {
+    fileId: v.id("files"),
+  },
+  async handler(ctx, args) {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      throw new ConvexError("Ограничено в доступе");
+    }
+
+    const file = await ctx.db.get(args.fileId);
+
+    if (!file) {
+      throw new ConvexError("Файл не найден");
+    }
+
+    const hasAccess = await hasAccessToOrg(
+      ctx,
+      identity.tokenIdentifier,
+      file.orgId
+    );
+
+    if (!hasAccess) {
+      throw new ConvexError("Вы не имеете доступа к удалению этого файла.");
+    }
+
+    await ctx.db.delete(args.fileId);
+  }
+});
