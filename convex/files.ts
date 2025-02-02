@@ -6,24 +6,31 @@ import { Id } from "./_generated/dataModel";
 
 async function hasAccessToOrg(
   ctx: QueryCtx | MutationCtx,
-  tokenIdentifier: string,
   orgId: string
 ) {
-  const user = await getUser(ctx, tokenIdentifier);
-
-  const hasAccess =
-    user.orgIds.includes(orgId) || user.tokenIdentifier.includes(orgId);
-
-  return hasAccess;
-}
-
-async function hasAccessToFile(ctx: QueryCtx | MutationCtx, fileId: Id<"files">) {
   const identity = await ctx.auth.getUserIdentity();
 
   if (!identity) {
     return null;
   }
+  
+  const user = await ctx.db.query("users").withIndex("by_tokenIdentifier", (q) => q.eq("tokenIdentifier", identity.tokenIdentifier)).first();
+  
+  if (!user) {
+    return false;
+  }
 
+  const hasAccess =
+    user.orgIds.includes(orgId) || user.tokenIdentifier.includes(orgId);
+
+  if (!hasAccess) {
+      return null;
+    }
+
+  return { user };
+}
+
+async function hasAccessToFile(ctx: QueryCtx | MutationCtx, fileId: Id<"files">) {
   const file = await ctx.db.get(fileId);
 
   if (!file) {
@@ -32,7 +39,6 @@ async function hasAccessToFile(ctx: QueryCtx | MutationCtx, fileId: Id<"files">)
 
   const hasAccess = await hasAccessToOrg(
     ctx,
-    identity.tokenIdentifier,
     file.orgId
   );
 
@@ -40,13 +46,7 @@ async function hasAccessToFile(ctx: QueryCtx | MutationCtx, fileId: Id<"files">)
     return null;
   }
 
-  const user = await getUser(ctx, identity.tokenIdentifier);
-
-  if (!user) {
-    return null;
-  }
-
-  return { user, file };
+  return { user: hasAccess.user, file };
 }
 
 export const generateUploadUrl = mutation(async (ctx) => {
@@ -88,16 +88,8 @@ export const createFile = mutation({
     orgId: v.string()
   },
   async handler(ctx, args) {
-
-    const identity = await ctx.auth.getUserIdentity();
-
-    if (!identity) {
-      throw new ConvexError("Вы должны быть зарегистрированы в SafeBox для загрузки файлов.")
-    }
-
     const hasAccess = await hasAccessToOrg(
       ctx,
-      identity.tokenIdentifier,
       args.orgId
     );
 
@@ -129,7 +121,6 @@ export const getFiles = query({
 
     const hasAccess = await hasAccessToOrg(
       ctx,
-      identity.tokenIdentifier,
       args.orgId
     );
 
@@ -148,23 +139,17 @@ export const getFiles = query({
       files = files.filter((file) => file.name.toLowerCase().includes(query.toLowerCase()));
     }
 
-    const user = await getUser(ctx, identity.tokenIdentifier);
-
-    if (!user) {
-      return files;
-    }
-
     if (args.favorites) {
       const favorites = await ctx.db
         .query("favorites")
         .withIndex("by_userId_orgId_fileId", (q) =>
-          q.eq("userId", user._id)
-          .eq("orgId", args.orgId)
+          q.eq("userId", hasAccess.user._id)
+            .eq("orgId", args.orgId)
         )
         .collect();
 
-        files = files.filter((file) => favorites.some((favorite) => favorite.fileId === file._id));
-      }
+      files = files.filter((file) => favorites.some((favorite) => favorite.fileId === file._id));
+    }
     return files;
   },
 });
@@ -175,7 +160,7 @@ export const deleteFile = mutation({
   },
   async handler(ctx, args) {
     const access = await hasAccessToFile(ctx, args.fileId);
-    
+
     if (!access) {
       throw new ConvexError("Ограничено в доступе к этому файлу");
     }
@@ -195,10 +180,10 @@ export const toggleFavorite = mutation({
       throw new ConvexError("Ограничено в доступе к этому файлу");
     }
     const favorite = await ctx.db.query("favorites")
-      .withIndex("by_userId_orgId_fileId", (q) => 
+      .withIndex("by_userId_orgId_fileId", (q) =>
         q.eq("userId", access.user._id)
-         .eq("orgId", access.file.orgId)
-         .eq("fileId", access.file._id)
+          .eq("orgId", access.file.orgId)
+          .eq("fileId", access.file._id)
       )
       .first();
 
@@ -211,4 +196,29 @@ export const toggleFavorite = mutation({
     } else {
       await ctx.db.delete(favorite._id);
     }
-  }});
+  }
+});
+
+export const getAllFavorites = query({
+  args: {
+    orgId: v.string(),
+  },
+  async handler(ctx, args) {
+    const hasAccess = await hasAccessToOrg(
+      ctx,
+      args.orgId
+    );
+
+    if (!hasAccess) {
+      return [];
+    }
+    const favorites = await ctx.db.query("favorites")
+      .withIndex("by_userId_orgId_fileId", (q) =>
+        q.eq("userId", hasAccess.user._id)
+          .eq("orgId", args.orgId)
+      )
+      .collect();
+
+    return favorites;
+  }
+});

@@ -6,7 +6,7 @@ export default function FavoritesPage() {
 
     return (
         <div>
-            <FileBrowser title="Мое избранное" favorites/>
+            <FileBrowser title="Мое избранное" favoritesOnly/>
         </div>
     );
 }
