@@ -1,6 +1,5 @@
 import { ConvexError, v } from "convex/values";
 import { MutationCtx, QueryCtx, mutation, query } from "./_generated/server";
-import { getUser } from "./users";
 import { fileTypes } from "./schema";
 import { Id } from "./_generated/dataModel";
 
@@ -21,7 +20,7 @@ async function hasAccessToOrg(
   }
 
   const hasAccess =
-    user.orgIds.includes(orgId) || user.tokenIdentifier.includes(orgId);
+    user.orgIds.some((item) => item.orgId === orgId) || user.tokenIdentifier.includes(orgId);
 
   if (!hasAccess) {
       return null;
@@ -163,6 +162,12 @@ export const deleteFile = mutation({
 
     if (!access) {
       throw new ConvexError("Ограничено в доступе к этому файлу");
+    }
+
+    const isAdmin = access.user.orgIds.find(org => org.orgId === access.file.orgId)?.role === "Администратор";
+
+    if (!isAdmin) {
+      throw new ConvexError("Вы не являетесь администратором этой организации");
     }
 
     await ctx.db.delete(args.fileId);

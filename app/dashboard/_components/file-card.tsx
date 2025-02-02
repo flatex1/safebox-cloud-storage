@@ -32,6 +32,7 @@ import { useMutation, useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
 import { useToast } from "@/hooks/use-toast"
 import Image from 'next/image'
+import { Protect } from "@clerk/nextjs"
 
 
 function FileCardActions({ file, isFavorited }: { file: Doc<"files">, isFavorited: boolean }) {
@@ -89,12 +90,21 @@ function FileCardActions({ file, isFavorited }: { file: Doc<"files">, isFavorite
                         )}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
+                    <Protect
+                        role="org:admin"
+                        fallback={
+                           <DropdownMenuItem disabled title="Только администраторы организации могут удалять файлы">
+                                <TrashIcon className="w-4 h-4" /> Удалить
+                            </DropdownMenuItem>
+                        }
+                    >
                     <DropdownMenuItem
                         onClick={() => setIsConfirmOpen(true)}
                         className="flex gap-1 text-red-600 items-center text-center cursor-pointer"
                     >
                         <TrashIcon className="w-4 h-4" /> Удалить
                     </DropdownMenuItem>
+                    </Protect>                   
                 </DropdownMenuContent>
             </DropdownMenu>
         </>

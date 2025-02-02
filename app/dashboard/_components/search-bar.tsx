@@ -12,6 +12,7 @@ const formSchema = z.object({
 })
 
 export function SearchBar({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     query,
     setQuery,
 }: {
