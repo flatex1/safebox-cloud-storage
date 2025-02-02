@@ -83,7 +83,7 @@ export function UploadButton() {
           title: "Успешно",
           description: "Теперь ваш файл виден всеми участниками организации, если вы состоите в ней.",
         });
-      } catch (err) {
+      } catch {
         toast({
           variant: "destructive",
           title: "Упс! Что-то пошло не так",
@@ -92,6 +92,7 @@ export function UploadButton() {
       }
     }
   }
+  
   let orgId: string | undefined = undefined;
   if (organization.isLoaded && user.isLoaded) {
     orgId = organization.organization?.id ?? user.user?.id;
