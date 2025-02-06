@@ -6,9 +6,13 @@ import { useQuery } from "convex/react";
 import { UploadButton } from "./upload-button";
 import { FileCard } from "./file-card";
 import Image from 'next/image'
-import { Loader2 } from "lucide-react";
+import { GridIcon, Loader2, Rows3Icon } from "lucide-react";
 import { SearchBar } from "./search-bar";
 import { useState } from "react";
+import { DataTable } from "./file-table";
+import { columns } from "./columns";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
 
 function Placeholder() {
   return (
@@ -70,6 +74,11 @@ export default function FileBrowser({
     orgId ? { orgId, query, favorites: favoritesOnly, deletedOnly: deletedOnly } : "skip");
   const isLoading = files === undefined;
 
+  const modifiedFiles = files?.map((file) => ({
+    ...file,
+    isFavorited: (favorites ?? []).some((favorite) => favorite.fileId === file._id),
+  })) ?? [];
+
   return (
     <div className="w-full">
       {isLoading && (
@@ -80,24 +89,43 @@ export default function FileBrowser({
       )}
 
       {!isLoading && (
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-4xl font-bold ">{title}</h1>
-          <SearchBar query={query} setQuery={setQuery} />
-          <UploadButton />
-        </div>
+        <>
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-4xl font-bold ">{title}</h1>
+            <SearchBar query={query} setQuery={setQuery} />
+            <UploadButton />
+          </div>
+
+          {!isLoading && files.length > 0 && (
+            <Tabs defaultValue="Сетка">
+              <TabsList className="mb-4">
+                <TabsTrigger value="Блоки" className="flex gap-1 items-center">
+                  <GridIcon className="h-4 w-4" />
+                  Блоки
+                </TabsTrigger>
+                <TabsTrigger value="Сетка" className="flex gap-1 items-center">
+                  <Rows3Icon className="h-4 w-4" />
+                  Сетка
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="Блоки">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {modifiedFiles?.map((file) => {
+                    return <FileCard key={file._id} file={file} />
+                  })}
+                </div>
+              </TabsContent>
+              <TabsContent value="Сетка">
+                <DataTable columns={columns} data={modifiedFiles} />
+              </TabsContent>
+            </Tabs>
+          )}
+        </>
       )}
 
       {!isLoading && query && files.length === 0 && <PlaceholderEmptyQuery />}
 
       {!isLoading && !query && files.length === 0 && <Placeholder />}
-
-      {!isLoading && files.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {files?.map((file) => (
-            <FileCard favorites={favorites ?? []} key={file._id} file={file} />
-          ))}
-        </div>
-      )}
     </div>
   );
 }
