@@ -30,6 +30,7 @@ export function FileCardActions({ file, isFavorited }: { file: Doc<"files">, isF
     const deleteFile = useMutation(api.files.deleteFile);
     const restoreFile = useMutation(api.files.restoreFile);
     const fileUrl = useQuery(api.files.getFileUrl, { fileId: file.fileId });
+    const me = useQuery(api.users.getMe);
     const { toast } = useToast();
 
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -88,7 +89,11 @@ export function FileCardActions({ file, isFavorited }: { file: Doc<"files">, isF
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <Protect
-                        role="org:admin"
+                        condition={(check) => {
+                            return check({
+                                role: "org:admin",
+                            }) || file.userId === me?._id;
+                        }}  
                         fallback={
                             <DropdownMenuItem disabled title="Только администраторы организации могут удалять файлы">
                                 <TrashIcon className="w-4 h-4" /> Удалить

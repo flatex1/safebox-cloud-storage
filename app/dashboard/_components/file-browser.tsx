@@ -12,6 +12,16 @@ import { useState } from "react";
 import { DataTable } from "./file-table";
 import { columns } from "./columns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Doc } from "@/convex/_generated/dataModel";
+import { Label } from "@radix-ui/react-label";
+
 
 
 function Placeholder() {
@@ -63,6 +73,7 @@ export default function FileBrowser({
   const organization = useOrganization();
   const user = useUser();
   const [query, setQuery] = useState("");
+  const [type, setType] = useState<Doc<"files">["type"] | "all">("all");
 
   let orgId: string | undefined = undefined;
   if (organization.isLoaded && user.isLoaded) {
@@ -71,7 +82,7 @@ export default function FileBrowser({
   const favorites = useQuery(api.files.getAllFavorites, orgId ? { orgId } : "skip");
   const files = useQuery(
     api.files.getFiles,
-    orgId ? { orgId, query, favorites: favoritesOnly, deletedOnly: deletedOnly } : "skip");
+    orgId ? { orgId, type: type === "all" ? undefined : type, query, favorites: favoritesOnly, deletedOnly: deletedOnly } : "skip");
   const isLoading = files === undefined;
 
   const modifiedFiles = files?.map((file) => ({
@@ -96,8 +107,9 @@ export default function FileBrowser({
             <UploadButton />
           </div>
 
-          {!isLoading && files.length > 0 && (
-            <Tabs defaultValue="Сетка">
+
+          <Tabs defaultValue="Сетка">
+            <div className="flex justify-between items-center">
               <TabsList className="mb-4">
                 <TabsTrigger value="Блоки" className="flex gap-1 items-center">
                   <GridIcon className="h-4 w-4" />
@@ -108,18 +120,41 @@ export default function FileBrowser({
                   Сетка
                 </TabsTrigger>
               </TabsList>
-              <TabsContent value="Блоки">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {modifiedFiles?.map((file) => {
-                    return <FileCard key={file._id} file={file} />
-                  })}
-                </div>
-              </TabsContent>
-              <TabsContent value="Сетка">
-                <DataTable columns={columns} data={modifiedFiles} />
-              </TabsContent>
-            </Tabs>
-          )}
+              <div className="flex gap-2 items-center text-sm">
+                <Label htmlFor="type-select">Фильтр по типам</Label>
+                <Select value={type} onValueChange={(newType) => {
+                setType(newType as Doc<"files">["type"]);
+              }}>
+                <SelectTrigger id="type-select" className="w-[150px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Все типы</SelectItem>
+                  <SelectItem value="image">Изображение</SelectItem>
+                  <SelectItem value="csv">CSV</SelectItem>
+                  <SelectItem value="pdf">PDF</SelectItem>
+                </SelectContent>
+              </Select>
+              </div>
+              
+
+            </div>
+            {!isLoading && files.length > 0 && (
+              <>
+                <TabsContent value="Блоки">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {modifiedFiles?.map((file) => {
+                      return <FileCard key={file._id} file={file} />
+                    })}
+                  </div>
+                </TabsContent>
+                <TabsContent value="Сетка">
+                  <DataTable columns={columns} data={modifiedFiles} />
+                </TabsContent>
+              </>
+            )}
+          </Tabs>
+
         </>
       )}
 
