@@ -25,23 +25,34 @@ http.route({
       switch (result.type) {
         case "user.created":
           await ctx.runMutation(internal.users.createUser, {
-            tokenIdentifier: `https://welcomed-snipe-73.clerk.accounts.dev|${result.data.id}`,
+            tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.id}`,
+            // TODO: сделать отображение имени и аватарки пользователя
+            name: `${result.data.first_name ?? "Без"} ${result.data.last_name ?? "Имени"}`,
+            image: result.data.image_url,
+          });
+          break;
+        case "user.updated":
+          await ctx.runMutation(internal.users.updateUser, {
+            tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.id}`,
+            // TODO: сделать отображение имени и аватарки пользователя
+            name: `${result.data.first_name ?? "Без"} ${result.data.last_name ?? "Имени"}`,
+            image: result.data.image_url,
           });
           break;
         case "organizationMembership.created":
           await ctx.runMutation(internal.users.addOrgIdToUser, {
-            tokenIdentifier: `https://welcomed-snipe-73.clerk.accounts.dev|${result.data.public_user_data.user_id}`,
+            tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.public_user_data.user_id}`,
             orgId: result.data.organization.id,
             role: result.data.role === "org:admin" ? "Администратор" : "Участник",
           });
           break;
-          case "organizationMembership.updated":
-            await ctx.runMutation(internal.users.updateRoleInOrgForUser, {
-              tokenIdentifier: `https://welcomed-snipe-73.clerk.accounts.dev|${result.data.public_user_data.user_id}`,
-              orgId: result.data.organization.id,
-              role: result.data.role === "org:admin" ? "Администратор" : "Участник",
-            });
-            break;     
+        case "organizationMembership.updated":
+          await ctx.runMutation(internal.users.updateRoleInOrgForUser, {
+            tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.public_user_data.user_id}`,
+            orgId: result.data.organization.id,
+            role: result.data.role === "org:admin" ? "Администратор" : "Участник",
+          });
+          break;
       }
 
       return new Response(null, {
@@ -52,6 +63,7 @@ http.route({
         status: 400,
       });
     }
-  }),});
+  }),
+});
 
 export default http;
