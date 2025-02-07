@@ -5,7 +5,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "hardy-aardvark-768.convex.cloud",
+        hostname: "hardy-aardvark-768.convex.cloud"
+      },
+      {
+        protocol: "https",
+        hostname: "tailwindui.com"
       },
     ]
   }
