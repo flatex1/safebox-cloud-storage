@@ -3,9 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Header } from "./header";
+import { Header } from "./_components/header";
 import { Toaster } from "@/components/ui/toaster"
-import { Footer } from "./footer";
+import { Footer } from "./_components/footer";
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
