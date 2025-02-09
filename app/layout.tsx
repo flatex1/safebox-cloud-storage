@@ -6,6 +6,8 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Header } from "./header";
 import { Toaster } from "@/components/ui/toaster"
 import { Footer } from "./footer";
+import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 
 const geistSans = Geist({
@@ -30,18 +32,20 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <ConvexClientProvider>
-        <Toaster />
-        <Header />
-        {children}
-        <Footer />
-        </ConvexClientProvider>      
-      </body>
-    </html>
+      <html lang="en">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+          <ConvexClientProvider>
+            <Toaster />
+            <Header />
+            {children}
+            <Footer />
+            <Analytics />
+            <SpeedInsights />
+          </ConvexClientProvider>
+        </body>
+      </html>
     </ClerkProvider>
   );
 }

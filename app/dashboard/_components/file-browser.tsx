@@ -108,7 +108,7 @@ export default function FileBrowser({
           </div>
 
 
-          <Tabs defaultValue="Сетка">
+          <Tabs defaultValue="Блоки">
             <div className="flex justify-between items-center">
               <TabsList className="mb-4">
                 <TabsTrigger value="Блоки" className="flex gap-1 items-center">
