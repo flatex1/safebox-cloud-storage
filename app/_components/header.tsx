@@ -1,6 +1,6 @@
 'use client'
 import { Button } from "@/components/ui/button";
-import { OrganizationSwitcher, SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { OrganizationSwitcher, SignInButton, SignedOut, UserButton } from "@clerk/nextjs";
 import {
     NavigationMenu,
     NavigationMenuContent,
