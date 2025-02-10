@@ -11,7 +11,7 @@ import {
     Users,
 } from "lucide-react";
 import { Pricing } from "./_components/pricing";
-import { SignUpButton } from "@clerk/nextjs";
+import { SignUpButton, SignedOut } from "@clerk/nextjs";
 import { DotPattern } from "@/components/magicui/dot-pattern";
 import { cn } from "@/lib/utils";
 
@@ -113,11 +113,13 @@ export default function LandingPage() {
                         <Button size="lg" className="gap-4" variant="outline">
                             Проект на GitHub <GithubIcon className="w-4 h-4" />
                         </Button>
-                        <SignUpButton>
-                            <Button size="lg" className="gap-4">
-                                Зарегистрироваться <MoveRight className="w-4 h-4" />
-                            </Button>
-                        </SignUpButton>
+                        <SignedOut>
+                            <SignUpButton>
+                                <Button size="lg" className="gap-4">
+                                    Зарегистрироваться <MoveRight className="w-4 h-4" />
+                                </Button>
+                            </SignUpButton>
+                        </SignedOut>
                     </div>
                 </div>
 
@@ -129,7 +131,7 @@ export default function LandingPage() {
                     transition={{ duration: 0.6 }}
                     className="py-28"
                 >
-                    <div className="max-w-screen-2xl mx-auto px-8">
+                    <div id="features" className="max-w-screen-2xl mx-auto px-8">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}

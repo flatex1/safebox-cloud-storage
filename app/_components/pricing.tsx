@@ -89,7 +89,7 @@ export function Pricing() {
     }, [api]);
 
     return (
-        <div className="py-28">
+        <div id="pricing" className="py-28">
             <div className="max-w-screen-xl mx-auto px-4 lg:px-8">
                 <div className="max-w-xl mx-auto text-center">
                     <p className="text-2xl font-bold md:text-3xl">

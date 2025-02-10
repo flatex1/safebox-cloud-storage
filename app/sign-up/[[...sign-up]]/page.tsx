@@ -86,7 +86,13 @@ export default function SignUpPage() {
                       <Clerk.Input type="email" required asChild>
                         <Input />
                       </Clerk.Input>
-                      <Clerk.FieldError className="block text-sm text-destructive" />
+                      <Clerk.FieldError className="block text-sm text-destructive">
+                          {({ message, code }) => (
+                            <span>
+                              {code === "form_identifier_exists" ? "Адрес почты уже использован. Попробуйте другой." : message}
+                            </span>
+                          )}
+                        </Clerk.FieldError>
                     </Clerk.Field>
                     <Clerk.Field name="password" className="space-y-2">
                       <Clerk.Label asChild>
@@ -95,7 +101,17 @@ export default function SignUpPage() {
                       <Clerk.Input type="password" required asChild>
                         <Input />
                       </Clerk.Input>
-                      <Clerk.FieldError className="block text-sm text-destructive" />
+                      <Clerk.FieldError className="block text-sm text-destructive">
+                          {({ message, code }) => (
+                            <span>
+                              {code === "form_password_length_too_short" ? "Пароль должен быть от 8 символов или больше." :
+                               code === "form_password_length_too_long" ? "Пароль слишком длинный." :
+                               code === "form_password_incorrect" ? "Неверный пароль." :
+                               code === "form_identifier_not_found" ? "Пользователь не найден." :
+                               message}
+                            </span>
+                          )}
+                        </Clerk.FieldError>
                     </Clerk.Field>
                   </CardContent>
                   <CardFooter>
@@ -152,10 +168,16 @@ export default function SignUpPage() {
                       <Clerk.Label>
                         <Label>Имя пользователя</Label>
                       </Clerk.Label>
-                      <Clerk.Input type="text" asChild>
+                      <Clerk.Input type="text" required asChild>
                         <Input />
                       </Clerk.Input>
-                      <Clerk.FieldError className="block text-sm text-destructive" />
+                      <Clerk.FieldError className="block text-sm text-destructive">
+                          {({ message, code }) => (
+                            <span>
+                              {code === "form_identifier_exists" ? "Это имя пользователя занято. Попробуйте другое." : message}
+                            </span>
+                          )}
+                        </Clerk.FieldError>
                     </Clerk.Field>
                   </CardContent>
                   <CardFooter>
@@ -190,7 +212,7 @@ export default function SignUpPage() {
                     <CardContent className="grid gap-y-4">
                       <div className="grid items-center justify-center gap-y-2">
                         <Clerk.Field name="code" className="space-y-2">
-                          <Clerk.Label className="sr-only">Электропочта</Clerk.Label>
+                          <Clerk.Label className="sr-only">Код с почты</Clerk.Label>
                           <div className="flex justify-center text-center">
                             <Clerk.Input
                               type="otp"
@@ -219,7 +241,13 @@ export default function SignUpPage() {
                               }}
                             />
                           </div>
-                          <Clerk.FieldError className="block text-center text-sm text-destructive" />
+                          <Clerk.FieldError className="block text-sm text-destructive">
+                          {({ message, code }) => (
+                            <span>
+                              {message === "Incorrect code" ? "Неверный код" : message} ({code})
+                            </span>
+                          )}
+                        </Clerk.FieldError>
                         </Clerk.Field>
                         <SignUp.Action
                           asChild

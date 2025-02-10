@@ -18,7 +18,7 @@ export function Header() {
         {
             title: "Главная",
             href: "/",
-            description: "",
+            description: "Главная страница сайта",
         },
         {
             title: "Хранилище",
@@ -73,8 +73,8 @@ export function Header() {
                                                         </div>
                                                         <Button size="sm" className="mt-10">
                                                             <Link href="/dashboard/files">
-                                                            Перейти в хранилище
-                                                            </Link>                                                           
+                                                                Перейти в хранилище
+                                                            </Link>
                                                         </Button>
                                                     </div>
                                                     <div className="flex flex-col text-sm h-full justify-end">
