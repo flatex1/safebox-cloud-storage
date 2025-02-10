@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { Footer } from "./_components/footer";
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { ruRU } from "@clerk/localizations";
 
 
 const geistSans = Geist({
@@ -31,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider localization={ruRU}>
       <html lang="en">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}

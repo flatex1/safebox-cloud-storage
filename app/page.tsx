@@ -4,8 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { GithubIcon, MoveRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-
 import {
     Shield,
     MousePointerClick,
@@ -14,6 +12,8 @@ import {
 } from "lucide-react";
 import { Pricing } from "./_components/pricing";
 import { SignUpButton } from "@clerk/nextjs";
+import { DotPattern } from "@/components/magicui/dot-pattern";
+import { cn } from "@/lib/utils";
 
 const features = [
     {
@@ -60,9 +60,15 @@ export default function LandingPage() {
     }, [titleNumber, titles]);
 
     return (
-        <div className="w-full">
-            <div className="container mx-auto">
-                <div className="flex gap-8 py-20 lg:py-40 items-center justify-center flex-col">
+        <div className="w-full relative overflow-hidden">
+            <div className="container mx-auto relative">
+                <div className="flex gap-8 py-20 lg:py-40 items-center justify-center flex-col relative">
+                    <DotPattern
+                        className={cn(
+                            "[mask-image:radial-gradient(600px_circle_at_center,white,transparent)]",
+                            "absolute inset-0 -z-10"
+                        )}
+                    />
                     <div>
                         <Button variant="secondary" size="sm" className="gap-4">
                             Читать о запуске <MoveRight className="w-4 h-4" />
@@ -114,6 +120,7 @@ export default function LandingPage() {
                         </SignUpButton>
                     </div>
                 </div>
+
 
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -178,5 +185,5 @@ export default function LandingPage() {
 
             </div>
         </div>
-    );
-}
+    )
+};

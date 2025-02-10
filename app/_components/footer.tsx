@@ -44,7 +44,7 @@ const items = [
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="pt-24"
+        className="mt-auto pt-24"
       >
         <div className="max-w-screen-xl mx-auto px-4 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12">
