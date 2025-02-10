@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
+  <h1>🔒 SafeBox Cloud Storage</h1>
+  <p>
+    <strong>Безопасное, современное облачное хранилище, созданное с использованием Next.js, Convex и аутентификации Clerk.</strong>
+  </p>
+  <p>
+    <a href="#возможности">Возможности</a> •
+    <a href="#технологии">Технологии</a> •
+    <a href="#начало-работы">Начало работы</a> •
+    <a href="#структура-проекта">Структура</a> •
+    <a href="#развертывание">Развертывание</a>
+  </p>
+</div>
 
-## Getting Started
+## ✨ Возможности
 
-First, run the development server:
+- 🔐 Безопасное хранение и обмен файлами
+- 👥 Аутентификация пользователей через Clerk
+- 🚀 Обновления в реальном времени с помощью Convex
+- 📱 Адаптивный дизайн
+- 🌐 Кроссплатформенная совместимость
+- 🔄 Автоматическая синхронизация
 
-```bash
+## 🛠️ Технологии
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js" />
+  <img src="https://img.shields.io/badge/Convex-FF6B6B?style=for-the-badge&logo=data:image/png;base64,..." alt="Convex" />
+  <img src="https://img.shields.io/badge/Clerk-4B4B4B?style=for-the-badge&logo=clerk&logoColor=white" alt="Clerk" />
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" />
+</p>
+
+## 🚀 Начало работы
+
+### 1️⃣ Клонируйте репозиторий:
+
+git clone https://github.com/flatex1/safebox-cloud-storage.git
+cd safebox-cloud-storage
+
+
+### 2️⃣ Установите зависимости:
+
+npm install
+
+
+### 3️⃣ Настройте переменные окружения:
+Создайте файл `.env.local` со следующим содержимым:
+
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=ваш_clerk_публичный_ключ
+CLERK_SECRET_KEY=ваш_clerk_секретный_ключ
+NEXT_PUBLIC_CONVEX_URL=ваш_convex_url
+
+
+### 4️⃣ Запустите сервер разработки:
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 5️⃣ Инициализируйте Convex:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+npx convex dev
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+📝 Откройте [http://localhost:3000](http://localhost:3000) в вашем браузере.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📁 Структура проекта
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+safebox-cloud-storage/
+├── 📂 app/            # Директория Next.js приложения
+├── 📂 components/     # Переиспользуемые React компоненты
+├── 📂 convex/        # Функции бэкенда Convex
+├── 📂 public/        # Статические файлы
+├── 📂 styles/        # Глобальные стили
+└── 📂 types/         # Определения типов TypeScript
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 👨‍💻 Рабочий процесс разработки
+
+1. 🌿 Создайте новую ветку для вашей функции
+2. 💻 Внесите изменения и протестируйте локально
+3. 📤 Отправьте pull request
+4. ✅ Дождитесь проверки и слияния
+
+## 🚀 Развертывание
+
+### Развертывание на Vercel
+
+1. 📤 Отправьте код на GitHub
+2. 🔗 Подключите репозиторий к Vercel
+3. ⚙️ Настройте переменные окружения
+4. 🚀 Разверните
+
+### Развертывание бэкенда Convex
+
+npx convex deploy
+
+
+## 📚 Дополнительная информация
+
+<p align="center">
+  <a href="https://nextjs.org/docs">📖 Документация Next.js</a> •
+  <a href="https://nextjs.org/learn">🎓 Изучение Next.js</a>
+</p>
+
+<div align="center">
+  <p>Made with ❤️ by SafeBox (flatex)</p>
+</div>

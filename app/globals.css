@@ -11,7 +11,7 @@
 
 .safebox-text {
   font-family: 'MTSSans', sans-serif;
-  font-weight: bold; /* или normal, в зависимости от нужного начертания */
+  font-weight: bold;
 }
 
 @layer base {
@@ -70,8 +70,6 @@
     --chart-5: 225 65% 55%;
   }
 }
-
-
 
 @layer base {
   * {
