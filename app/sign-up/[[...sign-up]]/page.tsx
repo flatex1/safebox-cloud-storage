@@ -1,4 +1,5 @@
 'use client'
+
 import * as Clerk from '@clerk/elements/common'
 import * as SignUp from '@clerk/elements/sign-up'
 import { Button } from '@/components/ui/button'
@@ -127,11 +128,31 @@ export default function SignUpPage() {
                     <CardTitle>Продолжить регистрацию</CardTitle>
                   </CardHeader>
                   <CardContent>
+                    <div className="flex gap-x-4">
+                      <Clerk.Field name="firstName" className="space-y-2 w-full">
+                        <Clerk.Label>
+                          <Label>Имя</Label>
+                        </Clerk.Label>
+                        <Clerk.Input type="text" required asChild>
+                          <Input />
+                        </Clerk.Input>
+                        <Clerk.FieldError className="block text-sm text-destructive" />
+                      </Clerk.Field>
+                      <Clerk.Field name="lastName" className="space-y-2 w-full">
+                        <Clerk.Label>
+                          <Label>Фамилия</Label>
+                        </Clerk.Label>
+                        <Clerk.Input type="text" required asChild>
+                          <Input />
+                        </Clerk.Input>
+                        <Clerk.FieldError className="block text-sm text-destructive" />
+                      </Clerk.Field>
+                    </div>
                     <Clerk.Field name="username" className="space-y-2">
                       <Clerk.Label>
                         <Label>Имя пользователя</Label>
                       </Clerk.Label>
-                      <Clerk.Input type="text" required asChild>
+                      <Clerk.Input type="text" asChild>
                         <Input />
                       </Clerk.Input>
                       <Clerk.FieldError className="block text-sm text-destructive" />
