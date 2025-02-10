@@ -11,6 +11,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "tailwindui.com"
       },
+      {
+        protocol: "https",
+        hostname: "safezy.ru"
+      },
+      {
+        protocol: "https",
+        hostname: "majestic-alpaca-742.convex.cloud"
+      },
     ]
   }
 };
