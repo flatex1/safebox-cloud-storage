@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import { ClerkProvider } from "@clerk/nextjs";
@@ -10,15 +10,10 @@ import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { ruRU } from "@clerk/localizations";
 
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const geist = localFont({
+  src: "../public/fonts/Geist.ttf",
+  variable: "--font-geist",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -33,9 +28,9 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider localization={ruRU}>
-      <html lang="en">
+      <html lang="ru">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`${geist.className} antialiased`}
         >
           <ConvexClientProvider>
             <Toaster />

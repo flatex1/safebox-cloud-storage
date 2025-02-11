@@ -23,7 +23,6 @@ import { Doc } from "@/convex/_generated/dataModel";
 import { Label } from "@radix-ui/react-label";
 
 
-
 function Placeholder() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

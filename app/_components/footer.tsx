@@ -1,4 +1,5 @@
 'use client'
+import ElasticLine from "@/fancy/components/physics/elastic-line";
 import { motion } from "framer-motion";
 import {
   Blocks,
@@ -120,12 +121,25 @@ export function Footer() {
           </div>
         </div>
 
+        
+          <ElasticLine
+            releaseThreshold={30}
+            strokeWidth={0.6}
+            animateInTransition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 30,
+              delay: 0.15,
+            }}
+          />
+
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.8 }}
-          className="mt-20 border-t pt-6 pb-8"
+          className="pb-8"
         >
           <p className="text-xs text-foreground/55">Safebox Inc. © 2025</p>
         </motion.div>
