@@ -70,8 +70,10 @@ export function UploadButton() {
         "image/webp": "image",
         "application/pdf": "pdf",
         "text/csv": "csv",
+        "application/x-zip-compressed": "archive",
+        "application/x-compressed": "archive"    
       };
-
+      
       try {
         await createFile({ name: values.title, fileId: storageId, orgId, type: types[fileType] });
 

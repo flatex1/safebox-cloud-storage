@@ -10,7 +10,7 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { Doc } from "@/convex/_generated/dataModel"
-import { FileTextIcon, GanttChartIcon, ImageIcon } from "lucide-react";
+import { FileTextIcon, GanttChartIcon, ImageIcon, PackageIcon } from "lucide-react";
 import { ReactNode } from "react"
 import { useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
@@ -22,6 +22,7 @@ export function FileCard({ file }: { file: Doc<"files"> & { isFavorited: boolean
         "image": <ImageIcon />,
         "pdf": <FileTextIcon />,
         "csv": <GanttChartIcon />,
+        "archive": <PackageIcon />,
     };
 
     const userProfile = useQuery(api.users.getUserProfile, {

@@ -1,9 +1,8 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
-export const fileTypes = v.union(v.literal("image"), v.literal("csv"), v.literal("pdf"));
+export const fileTypes = v.union(v.literal("image"), v.literal("csv"), v.literal("pdf"), v.literal("archive"));
 export const roles = v.union(v.literal("Администратор"), v.literal("Участник"));
-
 export default defineSchema({
     files: defineTable({
         name: v.string(),
@@ -28,5 +27,5 @@ export default defineSchema({
             orgId: v.string(),
             role: roles
         }))
-    }).index("by_tokenIdentifier", ["tokenIdentifier"]),
+    }).index("by_tokenIdentifier", ["tokenIdentifier"])
 });

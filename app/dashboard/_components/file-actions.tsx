@@ -17,7 +17,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 
-import { DownloadIcon, MoreVertical, StarHalf, StarIcon, TrashIcon, UndoIcon } from "lucide-react";
+import { DownloadIcon, MoreVertical, Share2Icon, StarHalf, StarIcon, TrashIcon, UndoIcon } from "lucide-react";
 import { useState } from "react"
 import { useMutation, useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
@@ -87,13 +87,26 @@ export function FileCardActions({ file, isFavorited }: { file: Doc<"files">, isF
                         <DownloadIcon
                             className="w-4 h-4" /> Скачать
                     </DropdownMenuItem>
+                    <DropdownMenuItem
+                        onClick={() => {
+                            const shareUrl = `${window.location.origin}/share/${file._id}`;
+                            navigator.clipboard.writeText(shareUrl);
+                            toast({
+                                title: "Ссылка скопирована",
+                                description: "Теперь вы можете поделиться файлом с кем угодно!"
+                            });
+                        }}
+                    >
+                        <Share2Icon className="w-4 h-4" />
+                        Создать страницу
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <Protect
                         condition={(check) => {
                             return check({
                                 role: "org:admin",
                             }) || file.userId === me?._id;
-                        }}  
+                        }}
                         fallback={
                             <DropdownMenuItem disabled title="Только администраторы организации могут удалять файлы">
                                 <TrashIcon className="w-4 h-4" /> Удалить
