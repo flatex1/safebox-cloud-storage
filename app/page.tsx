@@ -13,39 +13,43 @@ import {
 import { Pricing } from "./_components/pricing";
 import { SignUpButton, SignedOut } from "@clerk/nextjs";
 import { DotPattern } from "@/components/magicui/dot-pattern";
+
 import { cn } from "@/lib/utils";
 
-const features = [
-    {
-        name: "Простота использования",
-        description: "Интуитивно понятный интерфейс для всех пользователей",
-        icon: MousePointerClick,
-    },
-    {
-        name: "Безопасность данных",
-        description:
-            "Шифрование файлов и защита от несанкционированного доступа",
-        icon: Shield,
-    },
-    {
-        name: "Скорость и надёжность",
-        description:
-            "Мгновенный доступ к файлам в любой момент времени",
-        icon: Zap,
-    },
-    {
-        name: "Гибкий контроль",
-        description:
-            "Настройка прав доступа для каждого участника команды",
-        icon: Users,
-    },
-];
+
 
 export default function LandingPage() {
     const [titleNumber, setTitleNumber] = useState(0);
     const titles = useMemo(
         () => ["надёжное", "удобное", "безопасное", "простое", "умное"],
         []
+    );
+    const features = useMemo(
+        () => [
+            {
+                name: "Простота использования",
+                description: "Интуитивно понятный интерфейс для всех пользователей",
+                icon: MousePointerClick,
+            },
+            {
+                name: "Безопасность данных",
+                description:
+                    "Шифрование файлов и защита от несанкционированного доступа",
+                icon: Shield,
+            },
+            {
+                name: "Скорость и надёжность",
+                description:
+                    "Мгновенный доступ к файлам в любой момент времени",
+                icon: Zap,
+            },
+            {
+                name: "Гибкий контроль",
+                description:
+                    "Настройка прав доступа для каждого участника команды",
+                icon: Users,
+            },
+        ], []
     );
 
     useEffect(() => {
@@ -62,7 +66,7 @@ export default function LandingPage() {
     return (
         <div className="w-full relative overflow-hidden">
             <div className="container mx-auto relative">
-                <div className="flex gap-8 py-20 lg:py-40 items-center justify-center flex-col relative">
+                <div className="flex gap-6 py-12 lg:py-40 items-center justify-center flex-col relative">
                     <DotPattern
                         className={cn(
                             "[mask-image:radial-gradient(600px_circle_at_center,white,transparent)]",
@@ -75,7 +79,7 @@ export default function LandingPage() {
                         </Button>
                     </div>
                     <div className="flex gap-4 flex-col">
-                        <h1 className="text-5xl md:text-7xl max-w-5xl tracking-tighter text-center font-regular">
+                        <h1 className="text-4xl md:text-7xl max-w-5xl tracking-tighter text-center font-regular px-4">
                             <span className="text-spektr-cyan-50">SafeBox — это</span>
                             <span className="relative flex w-full justify-center overflow-hidden text-center md:pb-4 md:pt-1">
                                 &nbsp;
@@ -104,12 +108,13 @@ export default function LandingPage() {
                             <span className="text-spektr-cyan-50">облачное хранилище</span>
                         </h1>
 
-                        <p className="text-lg md:text-xl leading-relaxed tracking-tight text-muted-foreground max-w-2xl text-center">
+                        <p className="text-base md:text-xl leading-relaxed tracking-tight text-muted-foreground max-w-2xl text-center px-4">
                             SafeBox — это защищённое облачное хранилище для ваших файлов. Загружайте файлы, организуйте их в командах и делитесь ими с коллегами.
                             Войдите в систему с помощью Git или Google — быстро и безопасно.
                         </p>
+
                     </div>
-                    <div className="flex flex-row gap-3">
+                    <div className="flex flex-col sm:flex-row gap-3 px-4">
                         <Button size="lg" className="gap-4" variant="outline">
                             Проект на GitHub <GithubIcon className="w-4 h-4" />
                         </Button>
