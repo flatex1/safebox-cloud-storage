@@ -20,7 +20,7 @@ export function SideNav() {
         >
           <FileIcon />Все файлы
         </Button>
-      </Link>
+      </Link>  
 
       <Link href="/dashboard/favorites">
         <Button 

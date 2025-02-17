@@ -155,9 +155,9 @@ export default function SignInPage() {
                 <SignIn.Strategy name="password">
                   <Card className="w-full sm:w-96">
                     <CardHeader>
-                      <CardTitle>Проверьте вашу почту</CardTitle>
+                      <CardTitle>Введите пароль</CardTitle>
                       <CardDescription>
-                        Введите код подтверждения, отправленный на вашу почту
+                        Введите ваш пароль, чтобы войти в систему.
                       </CardDescription>
                       <p className="text-sm text-muted-foreground">
                         С возвращением, <SignIn.SafeIdentifier />!

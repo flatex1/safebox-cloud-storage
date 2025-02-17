@@ -1,4 +1,6 @@
 'use client'
+
+
 import { Button } from "@/components/ui/button";
 import { OrganizationSwitcher, SignInButton, SignedOut, UserButton } from "@clerk/nextjs";
 import {
@@ -44,7 +46,7 @@ export function Header() {
 
     return (
 
-        <header className="w-full z-40 bg-transparent backdrop-blur-md">
+        <header className="w-full px-5 relative z-50 bg-transparent backdrop-blur-md">
             <div className="container relative mx-auto min-h-20 flex gap-4 flex-row lg:grid lg:grid-cols-3 items-center">
                 <div className="justify-start items-center gap-4 lg:flex hidden flex-row">
                     <NavigationMenu className="flex justify-start items-start">
@@ -116,7 +118,7 @@ export function Header() {
                         {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                     </Button>
                     {isOpen && (
-                        <div className="absolute top-20 border-t flex flex-col w-full right-0 bg-background shadow-lg py-4 container gap-8">
+                        <div className="absolute top-20 border-t flex flex-col w-full right-0 bg-background shadow-lg py-4 container gap-8 max-h-[calc(100vh-5rem)] overflow-y-auto">
                             {navigationItems.map((item) => (
                                 <div key={item.title}>
                                     <div className="flex flex-col gap-2">

@@ -285,3 +285,25 @@ export const getAllFavorites = query({
     return favorites;
   }
 });
+
+export const getFile = query({
+  args: { fileId: v.id("files") },
+  async handler(ctx, args) {
+    const file = await ctx.db.get(args.fileId);
+    return file;
+  },
+});
+
+export const generatePublicDownloadUrl = query({
+  args: {
+    fileId: v.id("files"),
+  },
+  async handler(ctx, args) {
+    const file = await ctx.db.get(args.fileId);
+    if (!file) {
+      throw new ConvexError("Файл не найден");
+    }
+    const url = await ctx.storage.getUrl(file.fileId);
+    return url;
+  },
+});
