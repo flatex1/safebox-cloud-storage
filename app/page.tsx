@@ -189,7 +189,6 @@ export default function LandingPage() {
                 </motion.div>
 
                 <Pricing />
-
             </div>
         </div>
     )

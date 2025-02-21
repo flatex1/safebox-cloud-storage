@@ -1,4 +1,5 @@
-import { SideNav } from "./side-nav";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { SideNav } from "./_components/side-nav";
 
 export default function DashboardLayout({
   children,
@@ -6,13 +7,15 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <main className="container mx-auto pt-12">
-      <div className="flex gap-8">
-        <SideNav />
-        <div className="w-full">
-          {children}
-        </div>
-      </div>
-    </main>
+    <SidebarProvider>
+      <SideNav />
+      <SidebarInset>
+        <main className="container mx-auto px-3 py-12">
+          <div className="w-full">
+            {children}
+          </div>
+        </main>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }

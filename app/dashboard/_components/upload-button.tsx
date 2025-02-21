@@ -111,7 +111,7 @@ export function UploadButton() {
           }}
           >
             <DialogTrigger asChild>
-              <Button>
+              <Button className="w-full md:w-auto">
                 Загрузить файл
               </Button>
             </DialogTrigger>

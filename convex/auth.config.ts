@@ -1,7 +1,7 @@
 export default {
     providers: [
       {
-        domain: "https://clerk.www.safezy.ru",
+        domain: "https://welcomed-snipe-73.clerk.accounts.dev",
         applicationID: "convex",
       },
     ]

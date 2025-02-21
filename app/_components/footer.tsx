@@ -1,5 +1,7 @@
 'use client'
-import ElasticLine from "@/fancy/components/physics/elastic-line";
+
+
+import { Separator } from "@radix-ui/react-separator";
 import { motion } from "framer-motion";
 import {
   Blocks,
@@ -121,18 +123,7 @@ export function Footer() {
           </div>
         </div>
 
-        
-          <ElasticLine
-            releaseThreshold={30}
-            strokeWidth={0.6}
-            animateInTransition={{
-              type: "spring",
-              stiffness: 300,
-              damping: 30,
-              delay: 0.15,
-            }}
-          />
-
+        <Separator className="my-12" />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}

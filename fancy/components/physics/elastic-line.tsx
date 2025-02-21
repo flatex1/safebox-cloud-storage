@@ -117,6 +117,6 @@ const ElasticLine: React.FC<ElasticLineProps> = ({
       />
     </svg>
   )
-}
 
+}
 export default ElasticLine
