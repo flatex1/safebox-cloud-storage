@@ -1,7 +1,8 @@
+/* eslint-disable import/no-anonymous-default-export */
 export default {
     providers: [
       {
-        domain: "https://welcomed-snipe-73.clerk.accounts.dev",
+        domain: "https://clerk.www.safezy.ru",
         applicationID: "convex",
       },
     ]
