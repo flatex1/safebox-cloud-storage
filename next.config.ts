@@ -22,6 +22,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "majestic-alpaca-742.convex.cloud"
       },
+      {
+        protocol: "https",
+        hostname: "img.clerk.com"
+      }
     ]
   }
 };

@@ -4,13 +4,13 @@ import { fileTypes } from "./schema";
 import { Doc, Id } from "./_generated/dataModel";
 
 function assertCanDeleteFile(user: Doc<"users">, file: Doc<"files">) {
-  const canDelete = 
+  const canDelete =
     file.userId === user._id ||
     user.orgIds.find(org => org.orgId === file.orgId)?.role === "Администратор";
 
-    if (!canDelete) {
-      throw new ConvexError("У вас нет прав на удаление этого файла");
-    }
+  if (!canDelete) {
+    throw new ConvexError("У вас нет прав на удаление этого файла");
+  }
 }
 
 async function hasAccessToOrg(
@@ -190,8 +190,8 @@ export const deleteAllFiles = internalMutation({
       await ctx.storage.delete(file.fileId);
       return await ctx.db.delete(file._id);
     })
-  );
-},
+    );
+  },
 });
 
 export const deleteFile = mutation({
@@ -307,3 +307,14 @@ export const generatePublicDownloadUrl = query({
     return url;
   },
 });
+
+export const getUser = query({
+  args: {},
+  async handler(ctx) {
+    const user = await ctx.auth.getUserIdentity();
+
+    return user;
+  },
+});
+
+

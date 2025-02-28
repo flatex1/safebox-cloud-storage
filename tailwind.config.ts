@@ -36,10 +36,10 @@ export default {
   				DEFAULT: 'hsl(var(--accent))',
   				foreground: 'hsl(var(--accent-foreground))'
   			},
-			success: {
-				DEFAULT: 'hsl(var(--success))',
-				foreground: 'hsl(var(--success-foreground))'
-			},
+  			success: {
+  				DEFAULT: 'hsl(var(--success))',
+  				foreground: 'hsl(var(--success-foreground))'
+  			},
   			destructive: {
   				DEFAULT: 'hsl(var(--destructive))',
   				foreground: 'hsl(var(--destructive-foreground))'
@@ -53,6 +53,16 @@ export default {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
+  			},
+  			sidebar: {
+  				DEFAULT: 'hsl(var(--sidebar-background))',
+  				foreground: 'hsl(var(--sidebar-foreground))',
+  				primary: 'hsl(var(--sidebar-primary))',
+  				'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+  				accent: 'hsl(var(--sidebar-accent))',
+  				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+  				border: 'hsl(var(--sidebar-border))',
+  				ring: 'hsl(var(--sidebar-ring))'
   			}
   		},
   		borderRadius: {
@@ -60,15 +70,28 @@ export default {
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
-		  keyframes: {
-			'caret-blink': {
-			  '0%,70%,100%': { opacity: '1' },
-			  '20%,50%': { opacity: '0' },
-			},
-		  },
-		  animation: {
-			'caret-blink': 'caret-blink 1.25s ease-out infinite',
-		  },
+  		keyframes: {
+  			'caret-blink': {
+  				'0%,70%,100%': {
+  					opacity: '1'
+  				},
+  				'20%,50%': {
+  					opacity: '0'
+  				}
+  			},
+  			pulse: {
+  				'0%, 100%': {
+  					boxShadow: '0 0 0 0 var(--pulse-color)'
+  				},
+  				'50%': {
+  					boxShadow: '0 0 0 8px var(--pulse-color)'
+  				}
+  			}
+  		},
+  		animation: {
+  			'caret-blink': 'caret-blink 1.25s ease-out infinite',
+  			pulse: 'pulse var(--duration) ease-out infinite'
+  		}
   	}
   },
   plugins: [require("tailwindcss-animate")],
