@@ -1,13 +1,13 @@
 'use client'
 
 import * as React from "react";
-import { FileIcon, Frame, MoreHorizontal, StarIcon, TrashIcon, DockIcon, Settings } from "lucide-react";
+import { FileIcon, Frame, MoreHorizontal, StarIcon, TrashIcon, DockIcon, Settings, LifeBuoy, Send } from "lucide-react";
 import Link from "next/link";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
-import { Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarRail, SidebarGroupLabel, SidebarGroup } from "@/components/ui/sidebar";
-import { NavUser } from "@/components/nav-user";
-import { TeamSwitcher } from "@/components/team-switcher";
+import { Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarRail, SidebarGroupLabel, SidebarGroup, SidebarGroupContent } from "@/components/ui/sidebar";
+import { NavUser } from "./nav-user";
+import { TeamSwitcher } from "./team-switcher";
 
 const storageItems = [
   { title: "Все файлы", href: "/dashboard/files", icon: FileIcon },
@@ -18,7 +18,12 @@ const storageItems = [
 const serviceItems = [
   { title: "Главная страница", href: "/", icon: Frame },
   { title: "Тарифы", href: "/pricing", icon: DockIcon },
-  { title: "Настройки", href: "/settings", icon: Settings },
+  { title: "Настройки", href: "/dashboard/settings", icon: Settings },
+];
+
+const feedbackItems = [
+  { title: "Поддержка", href: "/contact-us", icon: LifeBuoy },
+  { title: "Обратная связь", href: "/", icon: Send },
 ];
 
 export function SideNav() {
@@ -40,7 +45,7 @@ export function SideNav() {
                 <Link href={item.href}>
                   <SidebarMenuButton
                     className={clsx("flex gap-2", {
-                      "text-blue-500": pathname.includes(item.href),
+                      "text-blue-500": pathname.includes(item.href.split('/')[2]),
                     })}
                   >
                     <item.icon className="size-4" />
@@ -59,7 +64,9 @@ export function SideNav() {
             {serviceItems.map((item) => (
               <SidebarMenuItem key={item.title}>
                 <Link href={item.href}>
-                  <SidebarMenuButton className="flex gap-2">
+                  <SidebarMenuButton className={clsx("flex gap-2", {
+                    "text-blue-500": pathname.includes(item.href.split('/')[2]),
+                  })}>
                     <item.icon className="size-4" />
                     {item.title}
                   </SidebarMenuButton>
@@ -69,13 +76,29 @@ export function SideNav() {
             <SidebarMenuItem>
               <SidebarMenuButton className="text-sidebar-foreground/70">
                 <MoreHorizontal className="text-sidebar-foreground/70" />
-                <span>More</span>
+                <span>Показать еще</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
-      </SidebarContent>
 
+        <SidebarGroup className="mt-auto">
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {feedbackItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild size="sm">
+                    <a href={item.href}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
       <SidebarFooter>
         <NavUser />
       </SidebarFooter>

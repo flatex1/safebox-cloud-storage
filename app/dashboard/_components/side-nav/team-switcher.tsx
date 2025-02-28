@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ChevronsUpDown, Plus, SquareUser, Undo2 } from "lucide-react"
+import { ChevronsUpDown, Plus, Settings2, SquareUser, Undo2 } from "lucide-react"
 
 import {
   DropdownMenu,
@@ -20,7 +20,8 @@ import {
 } from "@/components/ui/sidebar"
 import Image from "next/image"
 import { useAuth, useOrganizationList } from "@clerk/nextjs"
-import { Skeleton } from "./ui/skeleton"
+import { Skeleton } from "@/components/ui/skeleton"
+import Link from "next/link"
 
 export function TeamSwitcher() {
   const { isMobile } = useSidebar();
@@ -98,23 +99,39 @@ export function TeamSwitcher() {
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            {activeTeam && (
-              <DropdownMenuItem
-                className="gap-2 p-2"
-                onClick={() => setActive({ organization: null })}
-              >
-                <div className="flex size-6 items-center justify-center rounded-md border bg-background">
-                  <Undo2 className="size-4" />
-                </div>
-                <div className="font-medium text-muted-foreground">Личный профиль</div>
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuItem className="gap-2 p-2">
-              <div className="flex size-6 items-center justify-center rounded-md border bg-background">
-                <Plus className="size-4" />
-              </div>
-              <div className="font-medium text-muted-foreground">Добавить команду</div>
-            </DropdownMenuItem>
+            {activeTeam ? (
+              <>
+                <DropdownMenuItem
+                  className="gap-2 p-2"
+                  onClick={() => setActive({ organization: null })}
+                >
+                  <div className="flex size-6 items-center justify-center rounded-md border bg-background">
+                    <Undo2 className="size-4" />
+                  </div>
+                  <div className="font-medium text-muted-foreground">Личный профиль</div>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="gap-2 p-2"
+                >
+                  <Link href="/dashboard/settings?tab=teams" className="flex items-center gap-2">
+                    <div className="flex size-6 items-center justify-center rounded-md border bg-background">
+                      <Settings2 className="size-4" />
+                    </div>
+                    <div className="font-medium text-muted-foreground">Управлять командами</div>
+                  </Link>
+                </DropdownMenuItem>
+              </>
+            )
+              :
+              <DropdownMenuItem className="gap-2 p-2">
+                <Link href="/dashboard/settings?tab=teams" className="flex items-center gap-2">
+                  <div className="flex size-6 items-center justify-center rounded-md border bg-background">
+                    <Plus className="size-4" />
+                  </div>
+                  <div className="font-medium text-muted-foreground">Добавить команду</div>
+                </Link>
+              </DropdownMenuItem>}
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

@@ -142,7 +142,7 @@ export default function LandingPage() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.6, delay: 0.2 }}
-                            className="max-w-xl mx-auto lg:text-center"
+                            className="max-w-2xl mx-auto lg:text-center"
                         >
                             <p className="text-2xl font-bold md:text-3xl">
                                 Управление файлами не должно быть сложным — мы всё сделали за вас.

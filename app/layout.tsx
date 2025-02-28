@@ -9,6 +9,7 @@ import { Footer } from "./_components/footer";
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { ruRU } from "@clerk/localizations";
+import { ThemeProvider } from "@/components/theme-provider"
 
 const geist = localFont({
   src: "../public/fonts/Geist.ttf",
@@ -26,18 +27,25 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  
+
   return (
     <ClerkProvider localization={ruRU}>
-      <html lang="ru">
+      <html lang="ru" suppressHydrationWarning>
         <body
           className={`${geist.className} antialiased`}
         >
           <ConvexClientProvider>
-            <Toaster />
-            <Header />
-            {children}
-            <Footer />
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <Toaster />
+              <Header />
+              {children}
+              <Footer />
+            </ThemeProvider>
             <Analytics />
             <SpeedInsights />
           </ConvexClientProvider>

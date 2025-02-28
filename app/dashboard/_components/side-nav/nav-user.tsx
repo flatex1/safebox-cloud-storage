@@ -30,7 +30,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { useClerk, useUser } from "@clerk/nextjs"
-import { Skeleton } from "./ui/skeleton"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export function NavUser() {
   const { isMobile } = useSidebar();
@@ -118,7 +118,7 @@ export function NavUser() {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-            onClick={() => signOut({ redirectUrl: '/' })}
+              onClick={() => signOut({ redirectUrl: "/sign-in" })}
             >
               <LogOut />
               Выйти

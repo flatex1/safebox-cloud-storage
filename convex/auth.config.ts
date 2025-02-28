@@ -2,10 +2,8 @@
 export default {
     providers: [
       {
-        domain: "https://clerk.www.safezy.ru",
+        domain: process.env.CLERK_DOMAIN,
         applicationID: "convex",
       },
     ]
   };
-
-  

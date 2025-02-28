@@ -1,5 +1,5 @@
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { SideNav } from "./_components/side-nav";
+import { SideNav } from "./_components/side-nav/side-nav";
 
 export default function DashboardLayout({
   children,
