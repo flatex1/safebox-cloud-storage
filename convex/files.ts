@@ -3,6 +3,8 @@ import { internalMutation, mutation, query } from "./_generated/server";
 import { fileTypes } from "./schema";
 import { hasAccessToOrg, hasAccessToFile, assertCanDeleteFile } from "./access";
 
+
+
 export const generateUploadUrl = mutation(async (ctx) => {
   const identity = await ctx.auth.getUserIdentity();
 
@@ -41,9 +43,32 @@ export const createFile = mutation({
     fileId: v.id("_storage"),
     orgId: v.string(),
     folderId: v.optional(v.id("folders")),
+    size: v.optional(v.number()),
   },
   async handler(ctx, args) {
     const hasAccess = await hasAccessToOrg(ctx, args.orgId);
+
+    // Проверка лимитов хранилища
+    const subscription = await ctx.db
+      .query("subscriptions")
+      .withIndex("by_orgId", (q) => q.eq("orgId", args.orgId))
+      .first();
+
+    const files = await ctx.db
+      .query("files")
+      .withIndex("by_orgId", (q) => q.eq("orgId", args.orgId))
+      .filter((q) => q.eq(q.field("shouldDelete"), false))
+      .collect();
+
+    const totalSize = files.reduce((total, file) => total + (file.size || 0), 0);
+    const fileSizeInMB = (args.size || 0) / (1024 * 1024);
+    const totalSizeInMB = totalSize / (1024 * 1024);
+
+    const storageLimit = subscription?.storageLimit || 1000; // 1 GB по умолчанию
+
+    if (totalSizeInMB + fileSizeInMB > storageLimit) {
+      throw new ConvexError("Превышен лимит хранилища. Обновите тариф или удалите ненужные файлы.");
+    }
 
     if (!hasAccess) {
       throw new ConvexError("Вы не имеете доступа к этой организации.");
@@ -67,6 +92,7 @@ export const createFile = mutation({
       shouldDelete: false,
       userId: hasAccess.user._id,
       folderId: args.folderId,
+      size: args.size,
     });
   },
 });

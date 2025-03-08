@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import { Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarRail, SidebarGroupLabel, SidebarGroup, SidebarGroupContent } from "@/components/ui/sidebar";
 import { NavUser } from "./nav-user";
 import { TeamSwitcher } from "./team-switcher";
+import { StorageIndicator } from "../storage-indicator";
 
 const storageItems = [
   { title: "Все файлы", href: "/dashboard/files", icon: FileIcon },
@@ -72,13 +73,15 @@ export function SideNav() {
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>
-            ))}
+            ))}            
             <SidebarMenuItem>
               <SidebarMenuButton className="text-sidebar-foreground/70">
                 <MoreHorizontal className="text-sidebar-foreground/70" />
                 <span>Показать еще</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
+
+            <StorageIndicator />
           </SidebarMenu>
         </SidebarGroup>
 

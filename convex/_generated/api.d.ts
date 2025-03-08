@@ -20,6 +20,7 @@ import type * as favorites from "../favorites.js";
 import type * as files from "../files.js";
 import type * as folders from "../folders.js";
 import type * as http from "../http.js";
+import type * as payments from "../payments.js";
 import type * as users from "../users.js";
 
 /**
@@ -38,6 +39,7 @@ declare const fullApi: ApiFromModules<{
   files: typeof files;
   folders: typeof folders;
   http: typeof http;
+  payments: typeof payments;
   users: typeof users;
 }>;
 export declare const api: FilterApi<

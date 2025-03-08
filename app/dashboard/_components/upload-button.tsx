@@ -36,7 +36,11 @@ const formSchema = z.object({
     .refine((files) => files.length > 0, "Обязательное поле"),
 });
 
-export function UploadButton({ currentFolderId }: { currentFolderId?: Id<"folders"> | null }) {
+export function UploadButton({
+  currentFolderId,
+}: {
+  currentFolderId?: Id<"folders"> | null;
+}) {
   const { toast } = useToast();
   const organization = useOrganization();
   const user = useUser();
@@ -56,8 +60,8 @@ export function UploadButton({ currentFolderId }: { currentFolderId?: Id<"folder
     if (!orgId) return;
 
     const postUrl = await generateUploadUrl();
-
     const fileType = values.file[0].type;
+    const fileSize = values.file[0].size;
 
     if (typeof postUrl === "string") {
       const result = await fetch(postUrl, {
@@ -87,7 +91,10 @@ export function UploadButton({ currentFolderId }: { currentFolderId?: Id<"folder
           fileId: storageId,
           orgId,
           type: types[fileType],
-          folderId: currentFolderId ? (currentFolderId as Id<"folders">) : undefined,
+          folderId: currentFolderId
+            ? (currentFolderId as Id<"folders">)
+            : undefined,
+          size: fileSize,
         });
 
         form.reset();
