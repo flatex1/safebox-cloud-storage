@@ -207,7 +207,7 @@ function PricingCard({
 
       // Если бесплатный план, просто перенаправляем в хранилище
       if (planType === "free") {
-        router.push("/dashboard");
+        router.push("/dashboard/files");
         return;
       }
 
@@ -221,7 +221,7 @@ function PricingCard({
       });
 
       // Перенаправляем на страницу оплаты ЮКасса
-      window.location.href = payment.confirmation_url;
+      window.location.href = payment.confirmationUrl;
     } catch (error) {
       console.error("Ошибка создания платежа", error);
       toast.error("Не удалось создать платеж. Попробуйте позже.");

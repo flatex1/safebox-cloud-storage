@@ -3,7 +3,6 @@ import { action, internalMutation, query } from "./_generated/server";
 import { ConvexError } from "convex/values";
 import { Id } from "./_generated/dataModel";
 import { internal } from "./_generated/api";
-import { YooCheckout, ICreatePayment } from "@a2seven/yoo-checkout";
 
 // Планы подписок (в мегабайтах)
 export const PLANS = {
@@ -24,20 +23,31 @@ export const PLANS = {
   },
 };
 
-// Создание платежа
+// Схема ответа ЮКассы
+interface YookassaPaymentResponse {
+  id: string;
+  status: string;
+  confirmation: {
+    confirmation_url: string;
+  };
+}
+
+function generateRandomId() {
+  return Math.random().toString(36).substring(2, 15) + 
+         Math.random().toString(36).substring(2, 15);
+}
+
+// Создание платежа через прямой запрос к API ЮКассы
 export const createPayment = action({
   args: {
     orgId: v.string(),
     planType: v.string(),
     returnUrl: v.string(),
   },
-  handler: async (
-    ctx,
-    args
-  ): Promise<{ paymentId: Id<"payments">; confirmationUrl: string }> => {
+  handler: async (ctx, args): Promise<{ paymentId: Id<"payments">; confirmationUrl: string }> => {
     "use node";
     
-    const { v4: uuidv4 } = await import("uuid");
+    const fetch = globalThis.fetch;
 
     const identity = await ctx.auth.getUserIdentity();
 
@@ -50,16 +60,11 @@ export const createPayment = action({
       throw new ConvexError("Неверный тарифный план");
     }
 
-    // Инициализация ЮКасса
-    const checkout = new YooCheckout({
-      shopId: process.env.YOOKASSA_SHOP_ID!,
-      secretKey: process.env.YOOKASSA_SECRET_KEY!,
-    });
-
-    const idempotenceKey = uuidv4();
-
+    // Идентификатор идемпотентности
+    const idempotenceKey = generateRandomId();
+    
     try {
-      const createPaymentPayload: ICreatePayment = {
+      const paymentData = {
         amount: {
           value: String(plan.price),
           currency: "RUB",
@@ -76,14 +81,31 @@ export const createPayment = action({
         description: `Подписка ${plan.name} для SafeBox`,
       };
 
-      console.log("Payload для создания платежа:", createPaymentPayload);
+      console.log("Данные для создания платежа:", paymentData);
       
-      const payment = await checkout.createPayment(
-        createPaymentPayload,
-        idempotenceKey
-      );
-
-      console.log("Ответ ЮКасса:", JSON.stringify(payment));
+      const shopId = process.env.YOOKASSA_SHOP_ID!;
+      const secretKey = process.env.YOOKASSA_SECRET_KEY!;
+      
+      const authString = btoa(`${shopId}:${secretKey}`);
+      
+      const response = await fetch("https://api.yookassa.ru/v3/payments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Idempotence-Key": idempotenceKey,
+          "Authorization": `Basic ${authString}`
+        },
+        body: JSON.stringify(paymentData)
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Ошибка ЮКассы:", response.status, errorText);
+        throw new Error(`Ошибка ЮКассы: ${response.status} ${errorText}`);
+      }
+      
+      const payment = await response.json() as YookassaPaymentResponse;
+      console.log("Ответ ЮКассы:", JSON.stringify(payment));
       
       // Сохраняем платеж
       const paymentId = await ctx.runMutation(internal.payments.storePayment, {
@@ -100,7 +122,7 @@ export const createPayment = action({
         confirmationUrl: payment.confirmation.confirmation_url || "",
       };
     } catch (error) {
-      console.error("Детали ошибки:", error);
+      console.error("Ошибка создания платежа:", error);
       
       throw new ConvexError(`Не удалось создать платеж: ${
         error instanceof Error ? error.message : JSON.stringify(error)
@@ -248,7 +270,7 @@ export const getStorageUsage = query({
       (total, file) => total + (file.size || 0),
       0
     );
-    const totalSizeMB = totalSizeBytes / (1024 * 1024); // Convert to MB
+    const totalSizeMB = totalSizeBytes / (1024 * 1024);
 
     // Получение текущей подписки
     const subscription = await ctx.db
@@ -259,7 +281,7 @@ export const getStorageUsage = query({
     const storageLimit = subscription?.storageLimit || PLANS.free.storage;
 
     return {
-      used: Math.round(totalSizeMB * 100) / 100, // Округление до 2 знаков
+      used: Math.round(totalSizeMB * 100) / 100,
       limit: storageLimit,
       percentage: Math.min(100, Math.round((totalSizeMB / storageLimit) * 100)),
     };
