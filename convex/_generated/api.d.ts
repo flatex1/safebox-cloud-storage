@@ -13,9 +13,12 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as access from "../access.js";
 import type * as clerk from "../clerk.js";
 import type * as crons from "../crons.js";
+import type * as favorites from "../favorites.js";
 import type * as files from "../files.js";
+import type * as folders from "../folders.js";
 import type * as http from "../http.js";
 import type * as users from "../users.js";
 
@@ -28,9 +31,12 @@ import type * as users from "../users.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  access: typeof access;
   clerk: typeof clerk;
   crons: typeof crons;
+  favorites: typeof favorites;
   files: typeof files;
+  folders: typeof folders;
   http: typeof http;
   users: typeof users;
 }>;

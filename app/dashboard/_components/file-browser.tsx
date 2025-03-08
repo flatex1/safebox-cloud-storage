@@ -9,13 +9,30 @@ import { DataTable } from "./file-table";
 import { columns } from "./columns";
 import { SearchBar } from "./search-bar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Doc } from "@/convex/_generated/dataModel";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Doc, Id } from "@/convex/_generated/dataModel";
 import { Label } from "@radix-ui/react-label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { GridIcon, Rows3Icon } from "lucide-react";
-import { useState } from "react";
+import { ChevronLeft, GridIcon, Rows3Icon } from "lucide-react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
+import {
+  Breadcrumb,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbItem,
+  BreadcrumbList,
+} from "@/components/ui/breadcrumb";
+import { CreateFolderButton } from "./create-folder-button";
+import { Button } from "@/components/ui/button";
+import { FolderCard } from "./folder-card";
+import React from "react";
 
 function FileBrowserSkeleton() {
   return (
@@ -80,44 +97,156 @@ function Placeholder() {
         <p className="text-center text-gray-500">
           У вас нет загруженных файлов
         </p>
-        <UploadButton />
+        {/* TODO: Исправить баг с добавлением id папки */}
+        {/* <UploadButton /> */}
       </div>
     </div>
   );
 }
 
-export default function FileBrowser({ title, favoritesOnly, deletedOnly }: { title: string; favoritesOnly?: boolean; deletedOnly?: boolean }) {
+export default function FileBrowser({
+  title,
+  favoritesOnly,
+  deletedOnly,
+}: {
+  title: string;
+  favoritesOnly?: boolean;
+  deletedOnly?: boolean;
+}) {
   const organization = useOrganization();
   const user = useUser();
   const [query, setQuery] = useState("");
   const [type, setType] = useState<Doc<"files">["type"] | "all">("all");
+  const [currentFolderId, setCurrentFolderId] = useState<Id<"folders"> | null>(
+    null
+  );
+  const [folderPath, setFolderPath] = useState<
+    Array<{ id: Id<"folders"> | null; name: string }>
+  >([{ id: null, name: "Главная" }]);
 
   let orgId: string | undefined = undefined;
   if (organization.isLoaded && user.isLoaded) {
     orgId = organization.organization?.id ?? user.user?.id;
   }
 
-  const favorites = useQuery(api.files.getAllFavorites, orgId ? { orgId } : "skip");
-  const files = useQuery(api.files.getFiles, orgId ? { orgId, type: type === "all" ? undefined : type, query, favorites: favoritesOnly, deletedOnly: deletedOnly } : "skip");
-  const isLoading = files === undefined;
+  const favorites = useQuery(
+    api.favorites.getAllFavorites,
+    orgId ? { orgId } : "skip"
+  );
 
-  const modifiedFiles = files?.map((file) => ({
-    ...file,
-    isFavorited: (favorites ?? []).some((favorite) => favorite.fileId === file._id),
-  })) ?? [];
+  const files = useQuery(
+    api.files.getFiles,
+    orgId
+      ? {
+          orgId,
+          type: type === "all" ? undefined : type,
+          query,
+          favorites: favoritesOnly,
+          deletedOnly: deletedOnly,
+          folderId: currentFolderId || undefined,
+        }
+      : "skip"
+  );
+
+  const folders = useQuery(
+    api.folders.getFolders,
+    orgId && !deletedOnly
+      ? { orgId, parentId: currentFolderId || undefined, query, favoritesOnly }
+      : "skip"
+  );
+
+  const folderPathQuery = useQuery(
+    api.folders.getFolderPath,
+    currentFolderId ? { folderId: currentFolderId } : "skip"
+  );
+
+  useEffect(() => {
+    if (!currentFolderId) {
+      setFolderPath([{ id: null, name: "Главная" }]);
+      return;
+    }
+
+    if (folderPathQuery) {
+      const formattedPath = folderPathQuery.map((folder) => ({
+        id: folder._id,
+        name: folder.name,
+      }));
+      formattedPath.unshift({ id: "" as Id<"folders">, name: "Главная" });
+      setFolderPath(formattedPath);
+    }
+  }, [currentFolderId, folderPathQuery]);
+
+  const isLoading =
+    files === undefined || (folders === undefined && !deletedOnly);
+
+  const modifiedFiles =
+    files?.map((file) => ({
+      ...file,
+      isFavorited: (favorites ?? []).some(
+        (favorite) => favorite.fileId === file._id
+      ),
+    })) ?? [];
+
+  const navigateUp = () => {
+    if (folderPath.length > 1) {
+      const parentIndex = folderPath.length - 2;
+      setCurrentFolderId(folderPath[parentIndex].id);
+    }
+  };
+
+  const navigateTo = (index: number) => {
+    if (index < folderPath.length) {
+      const newPath = folderPath.slice(0, index + 1);
+      setFolderPath(newPath);
+      setCurrentFolderId(newPath[newPath.length - 1].id);
+    }
+  };
 
   return (
     <div className="w-full transition-[width,height] ease-linear px-4">
-      {isLoading ? <FileBrowserSkeleton /> : (
+      {isLoading ? (
+        <FileBrowserSkeleton />
+      ) : (
         <>
-          
           <div className="flex flex-col md:flex-row justify-between items-center gap-3 mb-4">
-            <h1 className="text-3xl md:text-4xl font-bold">{title}</h1>
+            <div className="flex flex-col w-full">
+              <h1 className="text-3xl md:text-4xl font-bold">{title}</h1>
+
+              <Breadcrumb className="mb-4">
+                <BreadcrumbList>
+                  {folderPath.map((folder, index) => (
+                    <React.Fragment
+                      key={`path-${folder.id || "root"}-${index}`}
+                    >
+                      {index > 0 && <BreadcrumbSeparator />}
+                      <BreadcrumbItem>
+                        <BreadcrumbLink
+                          onClick={() => navigateTo(index)}
+                          className={`cursor-pointer ${index === folderPath.length - 1 ? "font-bold" : ""}`}
+                        >
+                          {folder.name}
+                        </BreadcrumbLink>
+                      </BreadcrumbItem>
+                    </React.Fragment>
+                  ))}
+                </BreadcrumbList>
+              </Breadcrumb>
+            </div>
             <SearchBar query={query} setQuery={setQuery} />
-            <UploadButton />
+            <div className="flex gap-2">
+              <CreateFolderButton currentFolderId={currentFolderId} />
+              <UploadButton currentFolderId={currentFolderId} />
+            </div>
           </div>
 
-         
+          {/* Кнопка "Назад", если мы в папке */}
+          {currentFolderId && (
+            <Button variant="outline" className="mb-4" onClick={navigateUp}>
+              <ChevronLeft className="mr-2 h-4 w-4" />
+              Назад
+            </Button>
+          )}
+
           <Tabs defaultValue="Блоки">
             <div className="flex flex-col md:flex-row justify-between items-center gap-3">
               <TabsList className="mb-4 w-full md:w-auto">
@@ -133,8 +262,16 @@ export default function FileBrowser({ title, favoritesOnly, deletedOnly }: { tit
 
               <div className="flex gap-2 items-center text-sm w-full md:w-auto">
                 <Label htmlFor="type-select">Фильтр по типам</Label>
-                <Select value={type} onValueChange={(newType) => setType(newType as Doc<"files">["type"])}>
-                  <SelectTrigger id="type-select" className="w-full md:w-[150px]">
+                <Select
+                  value={type}
+                  onValueChange={(newType) =>
+                    setType(newType as Doc<"files">["type"])
+                  }
+                >
+                  <SelectTrigger
+                    id="type-select"
+                    className="w-full md:w-[150px]"
+                  >
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -147,16 +284,26 @@ export default function FileBrowser({ title, favoritesOnly, deletedOnly }: { tit
               </div>
             </div>
 
-            
             <TabsContent value="Блоки">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                {modifiedFiles.map((file) => (
-                  <FileCard key={file._id} file={file} />
+                {!deletedOnly &&
+                  folders?.map(
+                    (folder, index) =>
+                      folder && (
+                        <FolderCard
+                          key={`folder-${folder._id}-${index}`}
+                          folder={folder}
+                          onClick={() => setCurrentFolderId(folder._id)}
+                        />
+                      )
+                  )}
+
+                {modifiedFiles.map((file, index) => (
+                  <FileCard key={`file-${file._id}-${index}`} file={file} />
                 ))}
               </div>
             </TabsContent>
 
-            
             <TabsContent value="Сетка">
               <DataTable columns={columns} data={modifiedFiles} />
             </TabsContent>
@@ -164,9 +311,13 @@ export default function FileBrowser({ title, favoritesOnly, deletedOnly }: { tit
         </>
       )}
 
-      {!isLoading && query && files.length === 0 && <PlaceholderEmptyQuery />}
+      {!isLoading && query && files.length === 0 && folders?.length === 0 && (
+        <PlaceholderEmptyQuery />
+      )}
 
-      {!isLoading && !query && files.length === 0 && <Placeholder />}
+      {!isLoading && !query && files.length === 0 && folders?.length === 0 && (
+        <Placeholder />
+      )}
     </div>
   );
 }

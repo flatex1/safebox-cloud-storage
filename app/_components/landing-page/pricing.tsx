@@ -1,7 +1,7 @@
 "use client";
+
 import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
-
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -90,6 +90,8 @@ export function Pricing() {
 
     return (
         <div id="pricing" className="py-28">
+            
+
             <div className="max-w-screen-xl mx-auto px-4 lg:px-8">
                 <div className="max-w-xl mx-auto text-center">
                     <p className="text-2xl font-bold md:text-3xl">

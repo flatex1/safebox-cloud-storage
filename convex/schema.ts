@@ -1,9 +1,21 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
-export const fileTypes = v.union(v.literal("image"), v.literal("csv"), v.literal("pdf"), v.literal("archive"));
+export const fileTypes = v.union(v.literal("image"), v.literal("csv"), v.literal("pdf"), v.literal("archive"), v.literal("text"));
 export const roles = v.union(v.literal("Администратор"), v.literal("Участник"));
+
 export default defineSchema({
+
+    folders: defineTable({
+        name: v.string(),
+        orgId: v.string(),
+        userId: v.string(),
+        parentId: v.optional(v.id("folders")),
+        description: v.optional(v.string()),
+    })
+        .index("by_orgId", ["orgId"])
+        .index("by_parentId", ["parentId"]),
+
     files: defineTable({
         name: v.string(),
         type: fileTypes,
@@ -11,14 +23,19 @@ export default defineSchema({
         orgId: v.string(),
         userId: v.id("users"),
         shouldDelete: v.optional(v.boolean()),
+        folderId: v.optional(v.id("folders")),
     })
         .index("by_orgId", ["orgId"])
-        .index("by_shouldDelete", ["shouldDelete"]),
+        .index("by_shouldDelete", ["shouldDelete"])
+        .index("by_userId", ["userId"])
+        .index("by_folderId", ["folderId"]),
+
     favorites: defineTable({
         fileId: v.id("files"),
         orgId: v.string(),
         userId: v.id("users"),
     }).index("by_userId_orgId_fileId", ["userId", "orgId", "fileId"]),
+
     users: defineTable({
         tokenIdentifier: v.string(),
         name: v.optional(v.string()),
@@ -28,4 +45,5 @@ export default defineSchema({
             role: roles
         }))
     }).index("by_tokenIdentifier", ["tokenIdentifier"])
+
 });

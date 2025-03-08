@@ -22,7 +22,7 @@ export default function SignInPage() {
           {(isGlobalLoading) => (
             <>
               <SignIn.Step name="start">
-                <Card className="w-full sm:w-96">
+                <Card className="w-full sm:w-96">                
                   <CardHeader>
                     <CardTitle>Войти в SafeBox</CardTitle>
                     <CardDescription>С возвращением! Пожалуйста, войдите, чтобы продолжить</CardDescription>
