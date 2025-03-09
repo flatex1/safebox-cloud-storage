@@ -33,20 +33,25 @@ interface YookassaPaymentResponse {
 }
 
 function generateRandomId() {
-  return Math.random().toString(36).substring(2, 15) + 
-         Math.random().toString(36).substring(2, 15);
+  return (
+    Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2, 15)
+  );
 }
 
-// Создание платежа через прямой запрос к API ЮКассы
+// Создание платежа
 export const createPayment = action({
   args: {
     orgId: v.string(),
     planType: v.string(),
     returnUrl: v.string(),
   },
-  handler: async (ctx, args): Promise<{ paymentId: Id<"payments">; confirmationUrl: string }> => {
+  handler: async (
+    ctx,
+    args
+  ): Promise<{ paymentId: Id<"payments">; confirmationUrl: string }> => {
     "use node";
-    
+
     const fetch = globalThis.fetch;
 
     const identity = await ctx.auth.getUserIdentity();
@@ -57,12 +62,12 @@ export const createPayment = action({
 
     const plan = PLANS[args.planType as keyof typeof PLANS];
     if (!plan || plan.price === 0) {
-      throw new ConvexError("Неверный тарифный план");
+      throw new ConvexError("Такого тарифного плана не существует");
     }
 
     // Идентификатор идемпотентности
     const idempotenceKey = generateRandomId();
-    
+
     try {
       const paymentData = {
         amount: {
@@ -78,35 +83,32 @@ export const createPayment = action({
           orgId: args.orgId,
           planType: args.planType,
         },
-        description: `Подписка ${plan.name} для SafeBox`,
+        capture: "true",
+        description: `Подписка на тариф ${plan.name} для SafeBox`,
       };
 
-      console.log("Данные для создания платежа:", paymentData);
-      
       const shopId = process.env.YOOKASSA_SHOP_ID!;
       const secretKey = process.env.YOOKASSA_SECRET_KEY!;
-      
+
       const authString = btoa(`${shopId}:${secretKey}`);
-      
+
       const response = await fetch("https://api.yookassa.ru/v3/payments", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Idempotence-Key": idempotenceKey,
-          "Authorization": `Basic ${authString}`
+          Authorization: `Basic ${authString}`,
         },
-        body: JSON.stringify(paymentData)
+        body: JSON.stringify(paymentData),
       });
-      
+
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("Ошибка ЮКассы:", response.status, errorText);
         throw new Error(`Ошибка ЮКассы: ${response.status} ${errorText}`);
       }
-      
-      const payment = await response.json() as YookassaPaymentResponse;
-      console.log("Ответ ЮКассы:", JSON.stringify(payment));
-      
+
+      const payment = (await response.json()) as YookassaPaymentResponse;
+
       // Сохраняем платеж
       const paymentId = await ctx.runMutation(internal.payments.storePayment, {
         userId: identity.subject,
@@ -119,14 +121,16 @@ export const createPayment = action({
 
       return {
         paymentId,
-        confirmationUrl: payment.confirmation.confirmation_url || "",
+        confirmationUrl: payment.confirmation.confirmation_url,
       };
     } catch (error) {
       console.error("Ошибка создания платежа:", error);
-      
-      throw new ConvexError(`Не удалось создать платеж: ${
-        error instanceof Error ? error.message : JSON.stringify(error)
-      }`);
+
+      throw new ConvexError(
+        `Не удалось создать платеж: ${
+          error instanceof Error ? error.message : JSON.stringify(error)
+        }`
+      );
     }
   },
 });

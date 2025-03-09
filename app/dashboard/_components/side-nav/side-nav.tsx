@@ -1,11 +1,32 @@
-'use client'
+"use client";
 
 import * as React from "react";
-import { FileIcon, Frame, MoreHorizontal, StarIcon, TrashIcon, DockIcon, Settings, LifeBuoy, Send } from "lucide-react";
+import {
+  FileIcon,
+  StarIcon,
+  TrashIcon,
+  DockIcon,
+  Settings,
+  LifeBuoy,
+  Send,
+  House,
+} from "lucide-react";
 import Link from "next/link";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
-import { Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarRail, SidebarGroupLabel, SidebarGroup, SidebarGroupContent } from "@/components/ui/sidebar";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarFooter,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarRail,
+  SidebarGroupLabel,
+  SidebarGroup,
+  SidebarGroupContent,
+} from "@/components/ui/sidebar";
 import { NavUser } from "./nav-user";
 import { TeamSwitcher } from "./team-switcher";
 import { StorageIndicator } from "../storage-indicator";
@@ -17,8 +38,8 @@ const storageItems = [
 ];
 
 const serviceItems = [
-  { title: "Главная страница", href: "/", icon: Frame },
-  { title: "Тарифы", href: "/pricing", icon: DockIcon },
+  { title: "Главная страница", href: "/", icon: House },
+  { title: "Тарифы", href: "/#pricing", icon: DockIcon },
   { title: "Настройки", href: "/dashboard/settings", icon: Settings },
 ];
 
@@ -39,6 +60,8 @@ export function SideNav() {
       <SidebarContent>
         {/* Раздел "Хранилище" */}
         <SidebarGroup>
+          <StorageIndicator />
+
           <SidebarGroupLabel>Хранилище</SidebarGroupLabel>
           <SidebarMenu>
             {storageItems.map((item) => (
@@ -46,7 +69,9 @@ export function SideNav() {
                 <Link href={item.href}>
                   <SidebarMenuButton
                     className={clsx("flex gap-2", {
-                      "text-blue-500": pathname.includes(item.href.split('/')[2]),
+                      "text-blue-500": pathname.includes(
+                        item.href.split("/")[2]
+                      ),
                     })}
                   >
                     <item.icon className="size-4" />
@@ -65,23 +90,19 @@ export function SideNav() {
             {serviceItems.map((item) => (
               <SidebarMenuItem key={item.title}>
                 <Link href={item.href}>
-                  <SidebarMenuButton className={clsx("flex gap-2", {
-                    "text-blue-500": pathname.includes(item.href.split('/')[2]),
-                  })}>
+                  <SidebarMenuButton
+                    className={clsx("flex gap-2", {
+                      "text-blue-500": pathname.includes(
+                        item.href.split("/")[2]
+                      ),
+                    })}
+                  >
                     <item.icon className="size-4" />
                     {item.title}
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>
-            ))}            
-            <SidebarMenuItem>
-              <SidebarMenuButton className="text-sidebar-foreground/70">
-                <MoreHorizontal className="text-sidebar-foreground/70" />
-                <span>Показать еще</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            <StorageIndicator />
+            ))}
           </SidebarMenu>
         </SidebarGroup>
 

@@ -160,8 +160,8 @@ export function Pricing() {
           <p className="text-sm text-foreground/50">
             Все платежи обрабатываются и защищены{" "}
             <span className="font-semibold text-foreground">
-              <Link target="_blank" href="https://stripe.com/">
-                Stripe
+              <Link target="_blank" href="https://yookassa.ru/">
+                ЮКасса
               </Link>
             </span>
           </p>
@@ -212,7 +212,7 @@ function PricingCard({
       }
 
       // Для платных тарифов создаем платеж
-      const returnUrl = `${window.location.origin}/dashboard/payment/success`;
+      const returnUrl = `${window.location.origin}/payments/success`;
 
       const payment = await convex.action(api.payments.createPayment, {
         orgId: organization.id,

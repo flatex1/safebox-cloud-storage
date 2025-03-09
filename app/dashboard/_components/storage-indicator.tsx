@@ -33,7 +33,7 @@ export function StorageIndicator() {
   };
   
   return (
-    <div className="p-4 bg-background border rounded-lg">
+    <div className="p-4 bg-background border rounded-lg mb-4">
       <div className="flex justify-between mb-2">
         <span className="text-sm font-medium">Использование хранилища</span>
         <span className="text-sm text-muted-foreground">

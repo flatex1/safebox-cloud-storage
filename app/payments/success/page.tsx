@@ -1,5 +1,6 @@
 "use client";
 
+import confetti from "canvas-confetti";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "convex/react";
@@ -20,15 +21,50 @@ export default function PaymentSuccessPage() {
     organization ? { orgId: organization.id } : "skip"
   );
   
+  // Эффект для перенаправления на страницу файлов через 25 секунд
   useEffect(() => {
-    // Перенаправляем на дашборд через 5 секунд
     const timeout = setTimeout(() => {
-      router.push("/dashboard");
-    }, 5000);
+      router.push("/dashboard/files");
+    }, 25000);
     
     return () => clearTimeout(timeout);
   }, [router]);
   
+  // Эффект для запуска конфетти при успешной загрузке страницы
+  useEffect(() => {
+    if (subscription && !loading) {
+      // Запускаем конфетти один раз
+      const colors = ["#a786ff", "#fd8bbc", "#eca184", "#f8deb1"];
+      const end = Date.now() + 2 * 1000;
+      
+      const shootConfetti = () => {
+        if (Date.now() > end) return;
+        
+        confetti({
+          particleCount: 2,
+          angle: 60,
+          spread: 55,
+          startVelocity: 60,
+          origin: { x: 0, y: 0.5 },
+          colors: colors,
+        });
+        confetti({
+          particleCount: 2,
+          angle: 120,
+          spread: 55,
+          startVelocity: 60,
+          origin: { x: 1, y: 0.5 },
+          colors: colors,
+        });
+        
+        requestAnimationFrame(shootConfetti);
+      };
+      
+      shootConfetti();
+    }
+  }, [subscription, loading]);
+  
+  // Эффект для обновления состояния загрузки
   useEffect(() => {
     if (subscription) {
       setLoading(false);
