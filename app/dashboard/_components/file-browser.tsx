@@ -3,11 +3,9 @@
 import { api } from "@/convex/_generated/api";
 import { useOrganization, useUser } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
-import { UploadButton } from "./upload-button";
 import { FileCard } from "./file-card";
 import { DataTable } from "./file-table";
 import { columns } from "./columns";
-import { SearchBar } from "./search-bar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
@@ -22,17 +20,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronLeft, GridIcon, Rows3Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import {
-  Breadcrumb,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
-  BreadcrumbItem,
-  BreadcrumbList,
-} from "@/components/ui/breadcrumb";
-import { CreateFolderButton } from "./create-folder-button";
 import { Button } from "@/components/ui/button";
 import { FolderCard } from "./folder-card";
 import React from "react";
+import { DashboardHeader } from "./dashboard-header";
 
 function FileBrowserSkeleton() {
   return (
@@ -203,42 +194,20 @@ export default function FileBrowser({
   };
 
   return (
-    <div className="w-full transition-[width,height] ease-linear px-4">
+    <div className="w-full">
+      <DashboardHeader
+        title={title}
+        folderPath={folderPath}
+        navigateTo={navigateTo}
+        currentFolderId={currentFolderId}
+        query={query}
+        setQuery={setQuery}
+      />
+
       {isLoading ? (
         <FileBrowserSkeleton />
       ) : (
-        <>
-          <div className="flex flex-col md:flex-row justify-between items-center gap-3 mb-4">
-            <div className="flex flex-col w-full">
-              <h1 className="text-3xl md:text-4xl font-bold">{title}</h1>
-
-              <Breadcrumb className="mb-4">
-                <BreadcrumbList>
-                  {folderPath.map((folder, index) => (
-                    <React.Fragment
-                      key={`path-${folder.id || "root"}-${index}`}
-                    >
-                      {index > 0 && <BreadcrumbSeparator />}
-                      <BreadcrumbItem>
-                        <BreadcrumbLink
-                          onClick={() => navigateTo(index)}
-                          className={`cursor-pointer ${index === folderPath.length - 1 ? "font-bold" : ""}`}
-                        >
-                          {folder.name}
-                        </BreadcrumbLink>
-                      </BreadcrumbItem>
-                    </React.Fragment>
-                  ))}
-                </BreadcrumbList>
-              </Breadcrumb>
-            </div>
-            <SearchBar query={query} setQuery={setQuery} />
-            <div className="flex gap-2">
-              <CreateFolderButton currentFolderId={currentFolderId} />
-              <UploadButton currentFolderId={currentFolderId} />
-            </div>
-          </div>
-
+        <div className="p-4">
           {/* Кнопка "Назад", если мы в папке */}
           {currentFolderId && (
             <Button variant="outline" className="mb-4" onClick={navigateUp}>
@@ -308,7 +277,7 @@ export default function FileBrowser({
               <DataTable columns={columns} data={modifiedFiles} />
             </TabsContent>
           </Tabs>
-        </>
+        </div>
       )}
 
       {!isLoading && query && files.length === 0 && folders?.length === 0 && (

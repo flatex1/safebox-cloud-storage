@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button"
 import { FormField, FormItem, FormControl, FormMessage, Form } from "@/components/ui/form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -5,24 +7,22 @@ import { Loader2, SearchIcon } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Input } from "@/components/ui/input"
-import { Dispatch, SetStateAction } from "react"
 
 const formSchema = z.object({
     query: z.string().min(0).max(200),
 })
 
 export function SearchBar({
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     query,
     setQuery,
 }: {
     query: string,
-    setQuery: Dispatch<SetStateAction<string>>;
+    setQuery: (value: string) => void;
 }) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            query: "",
+            query: query || "",
         },
     })
 
@@ -30,25 +30,29 @@ export function SearchBar({
          setQuery(values.query);
     }
 
-
-    return <div>
+    return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-2 items-center">
                 <FormField
                     control={form.control}
                     name="query"
                     render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="m-0">
                             <FormControl>
-                                <Input placeholder="top2-arcwarden-rampage.mp4" {...field} />
+                                <Input 
+                                    placeholder="Поиск файлов..." 
+                                    {...field} 
+                                    className="w-[180px] md:w-[220px]" 
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
                 <Button
-                    size="sm"
+                    size="icon"
                     type="submit"
+                    variant="outline"
                     disabled={form.formState.isSubmitting}
                     className="flex gap-1"
                 >
@@ -56,9 +60,8 @@ export function SearchBar({
                         <Loader2 className="h-4 w-4 animate-spin" />
                     )}
                     <SearchIcon className="h-4 w-4" />
-                    Поиск
                 </Button>
             </form>
         </Form>
-    </div>
+    );
 }
