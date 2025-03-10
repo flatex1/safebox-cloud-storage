@@ -1,16 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  FileIcon,
-  StarIcon,
-  TrashIcon,
-  DockIcon,
-  Settings,
-  LifeBuoy,
-  Send,
-  House,
-} from "lucide-react";
+import { LifeBuoy, Send } from "lucide-react";
 import Link from "next/link";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
@@ -30,26 +21,28 @@ import {
 import { NavUser } from "./nav-user";
 import { TeamSwitcher } from "./team-switcher";
 import { StorageIndicator } from "../storage-indicator";
-
-const storageItems = [
-  { title: "Все файлы", href: "/dashboard/files", icon: FileIcon },
-  { title: "Избранное", href: "/dashboard/favorites", icon: StarIcon },
-  { title: "Корзина", href: "/dashboard/trash", icon: TrashIcon },
-];
-
-const serviceItems = [
-  { title: "Главная страница", href: "/", icon: House },
-  { title: "Тарифы", href: "/#pricing", icon: DockIcon },
-  { title: "Настройки", href: "/dashboard/settings", icon: Settings },
-];
-
-const feedbackItems = [
-  { title: "Поддержка", href: "/contact-us", icon: LifeBuoy },
-  { title: "Обратная связь", href: "/", icon: Send },
-];
+import { FileStackIcon, FileStackIconHandle } from "@/components/ui/file-stack";
+import { HomeIcon, HomeIconHandle } from "@/components/ui/home";
+import { DeleteIcon, DeleteIconHandle } from "@/components/ui/delete";
+import {
+  SettingsGearIcon,
+  SettingsGearIconHandle,
+} from "@/components/ui/settings-gear";
+import {
+  CircleDollarSignIcon,
+  CircleDollarSignIconHandle,
+} from "@/components/ui/circle-dollar-sign";
+import { SparklesIcon, SparklesIconHandle } from "@/components/ui/sparkles";
 
 export function SideNav() {
   const pathname = usePathname();
+
+  const fileIconRef = React.useRef<FileStackIconHandle>(null);
+  const favoriteIconRef = React.useRef<SparklesIconHandle>(null);
+  const trashIconRef = React.useRef<DeleteIconHandle>(null);
+  const homeIconRef = React.useRef<HomeIconHandle>(null);
+  const pricingIconRef = React.useRef<CircleDollarSignIconHandle>(null);
+  const settingsIconRef = React.useRef<SettingsGearIconHandle>(null);
 
   return (
     <Sidebar collapsible="icon">
@@ -64,22 +57,58 @@ export function SideNav() {
 
           <SidebarGroupLabel>Хранилище</SidebarGroupLabel>
           <SidebarMenu>
-            {storageItems.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <Link href={item.href}>
-                  <SidebarMenuButton
-                    className={clsx("flex gap-2", {
-                      "text-blue-500": pathname.includes(
-                        item.href.split("/")[2]
-                      ),
-                    })}
-                  >
-                    <item.icon className="size-4" />
-                    {item.title}
-                  </SidebarMenuButton>
-                </Link>
-              </SidebarMenuItem>
-            ))}
+            {/* Все файлы */}
+            <SidebarMenuItem>
+              <Link href="/dashboard/files" className={clsx({
+                  "text-blue-500 [&_*]:text-blue-500 [&_svg]:text-blue-500 [&_path]:text-blue-500": 
+                    pathname.includes("files"),
+                })}>
+                <SidebarMenuButton
+                  className="flex gap-2"
+                  onMouseEnter={() => fileIconRef.current?.startAnimation()}
+                  onMouseLeave={() => fileIconRef.current?.stopAnimation()}
+                >
+                  <FileStackIcon ref={fileIconRef} className="size-8" />
+                  Все файлы
+                </SidebarMenuButton>
+              </Link>
+            </SidebarMenuItem>
+
+            {/* Избранное */}
+            <SidebarMenuItem>
+              <Link href="/dashboard/favorites" className={clsx({
+                  "text-blue-500 [&_*]:text-blue-500 [&_svg]:text-blue-500 [&_path]:text-blue-500": 
+                    pathname.includes("favorites"),
+                })}>
+                <SidebarMenuButton
+                  className={clsx("flex gap-2", {
+                    "text-blue-500": pathname.includes("favorites"),
+                  })}
+                  onMouseEnter={() => favoriteIconRef.current?.startAnimation()}
+                  onMouseLeave={() => favoriteIconRef.current?.stopAnimation()}
+                >
+                  <SparklesIcon ref={favoriteIconRef} className="size-8" />
+                  Избранное
+                </SidebarMenuButton>
+              </Link>
+            </SidebarMenuItem>
+
+            {/* Корзина */}
+            <SidebarMenuItem>
+              <Link href="/dashboard/trash" className={clsx({
+                  "text-blue-500 [&_*]:text-blue-500 [&_svg]:text-blue-500 [&_path]:text-blue-500": 
+                    pathname.includes("trash"),
+                })}>
+                <SidebarMenuButton
+                  className="flex gap-2"
+                  onMouseEnter={() => trashIconRef.current?.startAnimation()}
+                  onMouseLeave={() => trashIconRef.current?.stopAnimation()}
+                >
+                  <DeleteIcon ref={trashIconRef} className="size-8" />
+                  Корзина
+                </SidebarMenuButton>
+              </Link>
+            </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
 
@@ -87,38 +116,84 @@ export function SideNav() {
         <SidebarGroup>
           <SidebarGroupLabel>Сервис</SidebarGroupLabel>
           <SidebarMenu>
-            {serviceItems.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <Link href={item.href}>
-                  <SidebarMenuButton
-                    className={clsx("flex gap-2", {
-                      "text-blue-500": pathname.includes(
-                        item.href.split("/")[2]
-                      ),
-                    })}
-                  >
-                    <item.icon className="size-4" />
-                    {item.title}
-                  </SidebarMenuButton>
-                </Link>
-              </SidebarMenuItem>
-            ))}
+            {/* Главная страница */}
+            <SidebarMenuItem>
+              <Link href="/" className={clsx({
+                  "text-blue-500 [&_*]:text-blue-500 [&_svg]:text-blue-500 [&_path]:text-blue-500": 
+                    pathname === "/",
+                })}>
+                <SidebarMenuButton
+                  className="flex gap-2"
+                  onMouseEnter={() => homeIconRef.current?.startAnimation()}
+                  onMouseLeave={() => homeIconRef.current?.stopAnimation()}
+                >
+                  <HomeIcon ref={homeIconRef} className="size-8" />
+                  Главная страница
+                </SidebarMenuButton>
+              </Link>
+            </SidebarMenuItem>
+
+            {/* Тарифы */}
+            <SidebarMenuItem>
+              <Link href="/#pricing" className={clsx({
+                  "text-blue-500 [&_*]:text-blue-500 [&_svg]:text-blue-500 [&_path]:text-blue-500": 
+                    pathname.includes("#pricing"),
+                })}>
+                <SidebarMenuButton
+                  className="flex gap-2"
+                  onMouseEnter={() => pricingIconRef.current?.startAnimation()}
+                  onMouseLeave={() => pricingIconRef.current?.stopAnimation()}
+                >
+                  <CircleDollarSignIcon
+                    ref={pricingIconRef}
+                    className="size-8"
+                  />
+                  Тарифы
+                </SidebarMenuButton>
+              </Link>
+            </SidebarMenuItem>
+
+            {/* Настройки */}
+            <SidebarMenuItem>
+              <Link href="/dashboard/settings" className={clsx({
+                  "text-blue-500 [&_*]:text-blue-500 [&_svg]:text-blue-500 [&_path]:text-blue-500": 
+                    pathname.includes("settings"),
+                })}>
+                <SidebarMenuButton
+                  className="flex gap-2"
+                  onMouseEnter={() => settingsIconRef.current?.startAnimation()}
+                  onMouseLeave={() => settingsIconRef.current?.stopAnimation()}
+                >
+                  <SettingsGearIcon ref={settingsIconRef} className="size-8" />
+                  Настройки
+                </SidebarMenuButton>
+              </Link>
+            </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
 
         <SidebarGroup className="mt-auto">
           <SidebarGroupContent>
             <SidebarMenu>
-              {feedbackItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild size="sm">
-                    <a href={item.href}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {/* Поддержка */}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild size="sm">
+                  <Link href="/contact-us">
+                    <LifeBuoy />
+                    <span>Поддержка</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              {/* Обратная связь */}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild size="sm">
+                  <Link href="/">
+                    <Send />
+                    <span>Обратная связь</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
