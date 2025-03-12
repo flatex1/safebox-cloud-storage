@@ -28,30 +28,24 @@ import { DashboardHeader } from "./dashboard-header";
 function FileBrowserSkeleton() {
   return (
     <div className="w-full transition-[width,height] ease-linear">
-      {/* Заголовок и кнопки */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-3 mb-4">
-        <Skeleton className="h-10 w-1/2 md:w-1/4" />
-        <Skeleton className="h-10 w-full md:w-1/3" />
-        <Skeleton className="h-10 w-full md:w-32" />
-      </div>
+      {/* Скелетон основного контента */}
+      <div className="p-2 sm:p-4">
+        {/* Вкладки и фильтр */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4 md:mb-6">
+          <Skeleton className="h-10 w-48" />
 
-      {/* Вкладки */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-3 mb-4">
-        <div className="flex gap-2">
-          <Skeleton className="h-10 w-24" />
-          <Skeleton className="h-10 w-24" />
+          <div className="flex gap-2 items-center w-full md:w-auto">
+            <Skeleton className="h-5 w-24 md:w-32" /> {/* Текст "Фильтр по типам" */}
+            <Skeleton className="h-10 w-full md:w-[150px]" /> {/* Селект */}
+          </div>
         </div>
-        <div className="flex gap-2 items-center">
-          <Skeleton className="h-8 w-36" />
-          <Skeleton className="h-10 w-24" />
-        </div>
-      </div>
 
-      {/* Карточки файлов */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <Skeleton key={i} className="h-40 w-full rounded-lg" />
-        ))}
+        {/* Карточки файлов */}
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+          {Array.from({ length: 7 }).map((_, i) => (
+            <Skeleton key={i} className="h-40 sm:h-52 w-full rounded-lg" />
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -60,14 +54,15 @@ function FileBrowserSkeleton() {
 function PlaceholderEmptyQuery() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      <div className="flex flex-col items-center justify-center min-h-[60vh] col-span-full gap-4">
+      <div className="flex flex-col items-center justify-center min-h-[40vh] sm:min-h-[60vh] col-span-full gap-4 px-4">
         <Image
           alt="изображение девушки, загружающей файлы в облако"
-          width={350}
-          height={350}
+          width={250}
+          height={250}
           src="/not-found.svg"
+          className="w-[200px] sm:w-[250px] md:w-[350px]"
         />
-        <p className="text-center text-gray-500">
+        <p className="text-center text-gray-500 text-sm sm:text-base">
           Мы не нашли подходящих файлов
         </p>
       </div>
@@ -78,14 +73,15 @@ function PlaceholderEmptyQuery() {
 function Placeholder() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      <div className="flex flex-col items-center justify-center min-h-[50vh] col-span-full gap-4">
+      <div className="flex flex-col items-center justify-center min-h-[40vh] sm:min-h-[50vh] col-span-full gap-4 px-4">
         <Image
           alt="изображение девушки, загружающей файлы в облако"
-          width={350}
-          height={350}
+          width={250}
+          height={250}
           src="/empty.svg"
+          className="w-[200px] sm:w-[250px] md:w-[350px]"
         />
-        <p className="text-center text-gray-500">
+        <p className="text-center text-gray-500 text-sm sm:text-base">
           У вас нет загруженных файлов
         </p>
         {/* TODO: Исправить баг с добавлением id папки */}
@@ -195,90 +191,100 @@ export default function FileBrowser({
 
   return (
     <div className="w-full">
-      <DashboardHeader
-        title={title}
-        folderPath={folderPath}
-        navigateTo={navigateTo}
-        currentFolderId={currentFolderId}
-        query={query}
-        setQuery={setQuery}
-      />
+    <DashboardHeader
+      title={title}
+      folderPath={folderPath}
+      navigateTo={navigateTo}
+      currentFolderId={currentFolderId}
+      query={query}
+      setQuery={setQuery}
+    />
 
-      {isLoading ? (
-        <FileBrowserSkeleton />
-      ) : (
-        <div className="p-4">
-          {/* Кнопка "Назад", если мы в папке */}
-          {currentFolderId && (
-            <Button variant="outline" className="mb-4" onClick={navigateUp}>
-              <ChevronLeft className="mr-2 h-4 w-4" />
-              Назад
-            </Button>
-          )}
+    {isLoading ? (
+      <FileBrowserSkeleton />
+    ) : (
+      <div className="p-2 sm:p-4">
+        {/* Кнопка "Назад", если мы в папке */}
+        {currentFolderId && (
+          <Button 
+            variant="outline" 
+            className="mb-2 md:mb-4 py-1.5 px-2.5 sm:py-2 sm:px-3 text-sm h-auto"
+            onClick={navigateUp}
+          >
+            <ChevronLeft className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+            Назад
+          </Button>
+        )}
 
-          <Tabs defaultValue="Блоки">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-3">
-              <TabsList className="mb-4 w-full md:w-auto">
-                <TabsTrigger value="Блоки" className="flex gap-1 items-center">
-                  <GridIcon className="h-4 w-4" />
-                  Блоки
-                </TabsTrigger>
-                <TabsTrigger value="Сетка" className="flex gap-1 items-center">
-                  <Rows3Icon className="h-4 w-4" />
-                  Сетка
-                </TabsTrigger>
-              </TabsList>
+        <Tabs defaultValue="Блоки">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+            <TabsList className="mb-3 md:mb-4 w-full md:w-auto h-auto py-1 px-1">
+              <TabsTrigger value="Блоки" className="flex gap-1 items-center py-1.5 px-2.5 sm:py-2 sm:px-3 text-sm">
+                <GridIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="ml-1">Блоки</span>
+              </TabsTrigger>
+              <TabsTrigger value="Сетка" className="flex gap-1 items-center py-1.5 px-2.5 sm:py-2 sm:px-3 text-sm">
+                <Rows3Icon className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="ml-1">Сетка</span>
+              </TabsTrigger>
+            </TabsList>
 
-              <div className="flex gap-2 items-center text-sm w-full md:w-auto">
-                <Label htmlFor="type-select">Фильтр по типам</Label>
-                <Select
-                  value={type}
-                  onValueChange={(newType) =>
-                    setType(newType as Doc<"files">["type"])
-                  }
+            <div className="flex gap-2 items-center text-xs sm:text-sm w-full md:w-auto mb-3 md:mb-0">
+              <Label htmlFor="type-select" className="whitespace-nowrap">Фильтр по типам</Label>
+              <Select
+                value={type}
+                onValueChange={(newType) =>
+                  setType(newType as Doc<"files">["type"])
+                }
+              >
+                <SelectTrigger
+                  id="type-select"
+                  className="w-full md:w-[150px] h-auto py-1.5 px-2.5 sm:py-2 sm:px-3 text-sm"
                 >
-                  <SelectTrigger
-                    id="type-select"
-                    className="w-full md:w-[150px]"
-                  >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Все типы</SelectItem>
-                    <SelectItem value="image">Изображение</SelectItem>
-                    <SelectItem value="csv">CSV</SelectItem>
-                    <SelectItem value="pdf">PDF</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Все типы</SelectItem>
+                  <SelectItem value="image">Изображение</SelectItem>
+                  <SelectItem value="csv">CSV</SelectItem>
+                  <SelectItem value="pdf">PDF</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
+          </div>
 
-            <TabsContent value="Блоки">
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                {!deletedOnly &&
-                  folders?.map(
-                    (folder, index) =>
-                      folder && (
-                        <FolderCard
-                          key={`folder-${folder._id}-${index}`}
-                          folder={folder}
-                          onClick={() => setCurrentFolderId(folder._id)}
-                        />
-                      )
-                  )}
+          <TabsContent value="Блоки">
+            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+              {!deletedOnly &&
+                folders?.map(
+                  (folder, index) =>
+                    folder && (
+                      <FolderCard
+                        key={`folder-${folder._id}-${index}`}
+                        folder={folder}
+                        onClick={() => setCurrentFolderId(folder._id)}
+                        
+                      />
+                    )
+                )}
 
-                {modifiedFiles.map((file, index) => (
-                  <FileCard key={`file-${file._id}-${index}`} file={file} />
-                ))}
-              </div>
-            </TabsContent>
+              {modifiedFiles.map((file, index) => (
+                <FileCard 
+                  key={`file-${file._id}-${index}`} 
+                  file={file}               
+                />
+              ))}
+            </div>
+          </TabsContent>
 
-            <TabsContent value="Сетка">
+          <TabsContent value="Сетка">
+            <div className="overflow-x-auto -mx-2 px-2">
               <DataTable columns={columns} data={modifiedFiles} />
-            </TabsContent>
-          </Tabs>
-        </div>
-      )}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    )}
 
       {!isLoading && query && files.length === 0 && folders?.length === 0 && (
         <PlaceholderEmptyQuery />

@@ -36,7 +36,15 @@ const TYPE_ICONS = {
   archive: <PackageIcon className="w-5 h-5 sm:w-6 sm:h-6" />,
 } as const;
 
-const FilePreview = ({ type, name, fileUrl }: { type: Doc<"files">["type"], name: string, fileUrl?: string }) => {
+const FilePreview = ({
+  type,
+  name,
+  fileUrl,
+}: {
+  type: Doc<"files">["type"];
+  name: string;
+  fileUrl?: string;
+}) => {
   if (type === "image" && fileUrl) {
     return (
       <Image
@@ -47,7 +55,7 @@ const FilePreview = ({ type, name, fileUrl }: { type: Doc<"files">["type"], name
       />
     );
   }
-  
+
   return (
     <div className="opacity-60 w-12 h-12 sm:w-16 sm:h-16">
       {type === "csv" && <GanttChartIcon className="w-full h-full" />}
@@ -67,23 +75,29 @@ export function FileCard({ file }: FileCardProps) {
     userId: file.userId,
   });
 
-  const fileUrl = useQuery(api.files.getFileUrl, { 
-    fileId: file.fileId 
+  const fileUrl = useQuery(api.files.getFileUrl, {
+    fileId: file.fileId,
   });
 
-  const userInfo = useMemo(() => ({
-    name: userProfile?.name || "Пользователь",
-    initials: userProfile?.name?.substring(0, 2) || "SB",
-    image: userProfile?.image,
-  }), [userProfile]);
+  const userInfo = useMemo(
+    () => ({
+      name: userProfile?.name || "Пользователь",
+      initials: userProfile?.name?.substring(0, 2) || "SB",
+      image: userProfile?.image,
+    }),
+    [userProfile]
+  );
 
-  const formattedDate = useMemo(() => 
-    format(new Date(file._creationTime), "dd MMM yyyy", { locale: ru })
-  , [file._creationTime]);
+  const formattedDate = useMemo(
+    () => format(new Date(file._creationTime), "dd MMM yyyy", { locale: ru }),
+    [file._creationTime]
+  );
 
-  const relativeDate = useMemo(() => 
-    formatRelative(new Date(file._creationTime), new Date(), { locale: ru })
-  , [file._creationTime]);
+  const relativeDate = useMemo(
+    () =>
+      formatRelative(new Date(file._creationTime), new Date(), { locale: ru }),
+    [file._creationTime]
+  );
 
   return (
     <Card className="hover:shadow-lg transition-all duration-300 group w-full sm:max-w-xs">
@@ -122,9 +136,7 @@ export function FileCard({ file }: FileCardProps) {
                 {formattedDate}
               </span>
             </TooltipTrigger>
-            <TooltipContent>
-              {relativeDate}
-            </TooltipContent>
+            <TooltipContent>{relativeDate}</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </CardFooter>

@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/circle-dollar-sign";
 import { SparklesIcon, SparklesIconHandle } from "@/components/ui/sparkles";
 
+
 export function SideNav() {
   const pathname = usePathname();
 
@@ -46,11 +47,12 @@ export function SideNav() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader>
+
+      <SidebarHeader className="bg-white dark:bg-sidebar">
         <TeamSwitcher />
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="bg-white dark:bg-sidebar">
         {/* Раздел "Хранилище" */}
         <SidebarGroup>
           <StorageIndicator />
@@ -198,7 +200,7 @@ export function SideNav() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="bg-white dark:bg-sidebar">
         <NavUser />
       </SidebarFooter>
       <SidebarRail />
