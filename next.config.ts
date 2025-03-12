@@ -1,4 +1,13 @@
+import withPWA from 'next-pwa';
 import type { NextConfig } from "next";
+
+type PWAConfig = {
+  dest: string;
+  disable?: boolean;
+  register: boolean;
+  skipWaiting: boolean;
+};
+
 
 const nextConfig: NextConfig = {
   typescript: {
@@ -30,4 +39,11 @@ const nextConfig: NextConfig = {
   }
 };
 
-export default nextConfig;
+const withPWAWrapper = withPWA as unknown as (config: PWAConfig) => (nextConfig: NextConfig) => NextConfig;
+
+export default withPWAWrapper({
+  dest: "public",
+  disable: process.env.NODE_ENV === "development",
+  register: true,
+  skipWaiting: true,
+})(nextConfig);

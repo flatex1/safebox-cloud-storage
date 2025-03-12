@@ -25,7 +25,7 @@ http.route({
       switch (result.type) {
         case "user.created":
           await ctx.runMutation(internal.users.createUser, {
-            tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.id}`,         
+            tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.id}`,
             name: `${result.data.first_name ?? "Без"} ${result.data.last_name ?? "Имени"}`,
             image: result.data.image_url,
           });
@@ -41,14 +41,16 @@ http.route({
           await ctx.runMutation(internal.users.addOrgIdToUser, {
             tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.public_user_data.user_id}`,
             orgId: result.data.organization.id,
-            role: result.data.role === "org:admin" ? "Администратор" : "Участник",
+            role:
+              result.data.role === "org:admin" ? "Администратор" : "Участник",
           });
           break;
         case "organizationMembership.updated":
           await ctx.runMutation(internal.users.updateRoleInOrgForUser, {
             tokenIdentifier: `https://${process.env.CLERK_HOSTNAME}|${result.data.public_user_data.user_id}`,
             orgId: result.data.organization.id,
-            role: result.data.role === "org:admin" ? "Администратор" : "Участник",
+            role:
+              result.data.role === "org:admin" ? "Администратор" : "Участник",
           });
           break;
       }
@@ -60,6 +62,47 @@ http.route({
       return new Response("Webhook Error", {
         status: 400,
       });
+    }
+  }),
+});
+
+http.route({
+  path: "/yookassa-webhook",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    try {
+      const payload = await request.text();
+      const payloadObj = JSON.parse(payload);
+
+      // Проверка типа события
+      if (payloadObj.event === "payment.succeeded") {
+        const metadata = payloadObj.object.metadata;
+
+        if (
+          metadata &&
+          metadata.userId &&
+          metadata.orgId &&
+          metadata.planType
+        ) {
+          // Обновляем подписку при успешной оплате
+          await ctx.runMutation(internal.payments.updateSubscription, {
+            userId: metadata.userId,
+            orgId: metadata.orgId,
+            planType: metadata.planType,
+          });
+
+          // Обновляем статус платежа
+          await ctx.runMutation(internal.payments.updatePaymentStatus, {
+            externalPaymentId: payloadObj.object.id,
+            status: payloadObj.object.status,
+          });
+        }
+      }
+
+      return new Response(null, { status: 200 });
+    } catch (error) {
+      console.error("Ошибка обработки вебхука ЮКасса", error);
+      return new Response("Webhook Error", { status: 400 });
     }
   }),
 });

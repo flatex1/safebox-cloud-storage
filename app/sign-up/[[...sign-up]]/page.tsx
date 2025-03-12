@@ -134,7 +134,7 @@ export default function SignUpPage() {
                         <Clerk.Link navigate="sign-in">Уже есть аккаунт? Войти</Clerk.Link>
                       </Button>
                     </div>
-                  </CardFooter>
+                  </CardFooter>                 
                 </Card>
               </SignUp.Step>
 
@@ -196,7 +196,7 @@ export default function SignUpPage() {
                         </Button>
                       </SignUp.Action>
                     </div>
-                  </CardFooter>
+                  </CardFooter>                
                 </Card>
               </SignUp.Step>
 

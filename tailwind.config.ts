@@ -1,3 +1,4 @@
+import animate from "tailwindcss-animate";
 import type { Config } from "tailwindcss";
 
 export default {
@@ -86,13 +87,22 @@ export default {
   				'50%': {
   					boxShadow: '0 0 0 8px var(--pulse-color)'
   				}
+  			},
+  			grid: {
+  				'0%': {
+  					transform: 'translateY(-50%)'
+  				},
+  				'100%': {
+  					transform: 'translateY(0)'
+  				}
   			}
   		},
   		animation: {
   			'caret-blink': 'caret-blink 1.25s ease-out infinite',
-  			pulse: 'pulse var(--duration) ease-out infinite'
+  			pulse: 'pulse var(--duration) ease-out infinite',
+  			grid: 'grid 15s linear infinite'
   		}
   	}
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [animate],
 } satisfies Config;
