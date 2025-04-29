@@ -70,7 +70,9 @@ export function TeamSwitcher() {
                 <span className="truncate font-semibold">
                   {activeTeam?.organization.name ?? "Личный профиль"}
                 </span>
-                <span className="truncate text-xs">{activeTeam?.role}</span>
+                <span className="truncate text-xs">
+                  {activeTeam?.role === "org:admin" ? "Администратор" : "Участник"}
+                </span>
               </div>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
