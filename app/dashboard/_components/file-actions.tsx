@@ -31,6 +31,7 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useToast } from "@/hooks/use-toast";
 import { Protect } from "@clerk/nextjs";
+import Link from "next/link";
 
 export function FileCardActions({
   file,
@@ -113,12 +114,34 @@ export function FileCardActions({
               navigator.clipboard.writeText(shareUrl);
               toast({
                 title: "Ссылка скопирована",
-                description: "Теперь вы можете поделиться файлом с кем угодно!",
+                description: (
+                  <span>
+                    Теперь вы можете поделиться файлом с кем угодно!
+                    <br />
+                    <a
+                      href={shareUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <button className="mt-2 px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
+                        Перейти
+                      </button>
+                    </a>
+                  </span>
+                ),
               });
             }}
           >
             <Share2Icon className="w-4 h-4" />
             Создать страницу
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link
+              href={`/dashboard/files/${file._id}`}
+              className="flex gap-1 items-center text-blue-600"
+            >
+              <span className="w-4 h-4">🤖</span> Открыть с AI
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <Protect

@@ -129,16 +129,18 @@ export function FileCard({ file }: FileCardProps) {
             {userInfo.name}
           </span>
         </div>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger>
-              <span className="text-gray-400 text-[10px] sm:text-xs ml-auto">
-                {formattedDate}
-              </span>
-            </TooltipTrigger>
-            <TooltipContent>{relativeDate}</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <div className="flex items-center gap-2">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <span className="text-gray-400 text-[10px] sm:text-xs ml-auto">
+                  {formattedDate}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent>{relativeDate}</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
       </CardFooter>
     </Card>
   );

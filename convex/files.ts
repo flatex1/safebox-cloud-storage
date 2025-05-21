@@ -1,9 +1,7 @@
 import { ConvexError, v } from "convex/values";
-import { internalMutation, mutation, query } from "./_generated/server";
+import { internalMutation, mutation, query, action } from "./_generated/server";
 import { fileTypes } from "./schema";
 import { hasAccessToOrg, hasAccessToFile, assertCanDeleteFile } from "./access";
-
-
 
 export const generateUploadUrl = mutation(async (ctx) => {
   const identity = await ctx.auth.getUserIdentity();
@@ -60,14 +58,19 @@ export const createFile = mutation({
       .filter((q) => q.eq(q.field("shouldDelete"), false))
       .collect();
 
-    const totalSize = files.reduce((total, file) => total + (file.size || 0), 0);
+    const totalSize = files.reduce(
+      (total, file) => total + (file.size || 0),
+      0
+    );
     const fileSizeInMB = (args.size || 0) / (1024 * 1024);
     const totalSizeInMB = totalSize / (1024 * 1024);
 
     const storageLimit = subscription?.storageLimit || 1000; // 1 GB по умолчанию
 
     if (totalSizeInMB + fileSizeInMB > storageLimit) {
-      throw new ConvexError("Превышен лимит хранилища. Обновите тариф или удалите ненужные файлы.");
+      throw new ConvexError(
+        "Превышен лимит хранилища. Обновите тариф или удалите ненужные файлы."
+      );
     }
 
     if (!hasAccess) {
@@ -149,13 +152,6 @@ export const getFiles = query({
       );
     }
 
-    // Поиск по имени
-    if (args.query) {
-      filesQuery = filesQuery.filter((q) =>
-        q.eq(q.field("name"), args.query!.toLowerCase())
-      );
-    }
-
     const files = await filesQuery.collect();
 
     // Фильтр избранного
@@ -195,11 +191,18 @@ export const getFiles = query({
 
     const favoriteIds = new Set(favorites.map((f) => f.fileId));
 
+    let filteredFiles = files;
     if (args.type) {
-      files.filter((file) => file.type === args.type);
+      filteredFiles = filteredFiles.filter((file) => file.type === args.type);
+    }
+    if (args.query) {
+      const q = args.query.toLowerCase();
+      filteredFiles = filteredFiles.filter((file) =>
+        file.name.toLowerCase().includes(q)
+      );
     }
 
-    return files.map((file) => ({
+    return filteredFiles.map((file) => ({
       ...file,
       isFavorited: favoriteIds.has(file._id),
     }));
@@ -289,5 +292,85 @@ export const getUser = query({
     const user = await ctx.auth.getUserIdentity();
 
     return user;
+  },
+});
+
+export const incrementDownloadCount = mutation({
+  args: { fileId: v.id("files") },
+  async handler(ctx, args) {
+    const file = await ctx.db.get(args.fileId);
+    if (!file) throw new ConvexError("Файл не найден");
+    const current = file.downloads || 0;
+    await ctx.db.patch(args.fileId, { downloads: current + 1 });
+    return current + 1;
+  },
+});
+
+export const getFileTextContent = action({
+  args: { storageId: v.id("_storage") },
+  handler: async (ctx, args) => {
+    const url = await ctx.storage.getUrl(args.storageId);
+    if (!url) throw new Error("URL не найден");
+    const res = await fetch(url);
+    const text = await res.text();
+    return text;
+  },
+});
+
+export const saveFileTextContentToStorage = action({
+  args: { content: v.string() },
+  handler: async (ctx, args) => {
+    const blob = new Blob([args.content], { type: "text/plain" });
+    const storageId = await ctx.storage.store(blob);
+    return storageId;
+  },
+});
+
+export const saveFileTextContent = mutation({
+  args: { fileId: v.id("files"), storageId: v.id("_storage") },
+  async handler(ctx, args) {
+    const file = await ctx.db.get(args.fileId);
+    if (!file) throw new Error("Файл не найден");
+    await ctx.db.patch(args.fileId, { fileId: args.storageId });
+    return true;
+  },
+});
+
+export const askFileRover = action({
+  args: {
+    fileContent: v.string(),
+    roverMessages: v.array(v.object({ role: v.string(), content: v.string() })),
+  },
+  returns: v.object({ answer: v.string() }),
+  handler: async (ctx, args) => {
+    const apiKey = process.env.GPT4ALL_API_KEY;
+    if (!apiKey) throw new Error("GPT4ALL_API_KEY не задан в env");
+    const systemPrompt =
+      "Ты — Rover, AI-ассистент, отвечай на вопросы по этому файлу. Вот содержимое файла: " +
+      args.fileContent;
+    const messages = [
+      { role: "system", content: systemPrompt },
+      ...args.roverMessages.map((m) => ({
+        // Rover на клиенте = assistant на API
+        role: m.role === "rover" ? "assistant" : m.role,
+        content: m.content,
+      })),
+    ];
+    const res = await fetch("https://api.gpt4-all.xyz/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages,
+        stream: false,
+      }),
+    });
+    if (!res.ok) throw new Error("Ошибка Rover: " + res.statusText);
+    const data = await res.json();
+    const answer = data.choices?.[0]?.message?.content || "Нет ответа";
+    return { answer };
   },
 });
