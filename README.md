@@ -95,6 +95,9 @@ safebox-cloud-storage/
 npx convex deploy
 
 ## 📚 Дополнительная информация
+<div align="center">
+ <a href="https://deepwiki.com/flatex1/safebox-cloud-storage"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
+</div>
 
 <p align="center">
   <a href="https://nextjs.org/docs">📖 Документация Next.js</a> •
