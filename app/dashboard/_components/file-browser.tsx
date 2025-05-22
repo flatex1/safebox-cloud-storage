@@ -35,7 +35,8 @@ function FileBrowserSkeleton() {
           <Skeleton className="h-10 w-48" />
 
           <div className="flex gap-2 items-center w-full md:w-auto">
-            <Skeleton className="h-5 w-24 md:w-32" /> {/* Текст "Фильтр по типам" */}
+            <Skeleton className="h-5 w-24 md:w-32" />{" "}
+            {/* Текст "Фильтр по типам" */}
             <Skeleton className="h-10 w-full md:w-[150px]" /> {/* Селект */}
           </div>
         </div>
@@ -191,100 +192,108 @@ export default function FileBrowser({
 
   return (
     <div className="w-full">
-    <DashboardHeader
-      title={title}
-      folderPath={folderPath}
-      navigateTo={navigateTo}
-      currentFolderId={currentFolderId}
-      query={query}
-      setQuery={setQuery}
-    />
+      <DashboardHeader
+        title={title}
+        folderPath={folderPath}
+        navigateTo={navigateTo}
+        currentFolderId={currentFolderId}
+        query={query}
+        setQuery={setQuery}
+      />
 
-    {isLoading ? (
-      <FileBrowserSkeleton />
-    ) : (
-      <div className="p-2 sm:p-4">
-        {/* Кнопка "Назад", если мы в папке */}
-        {currentFolderId && (
-          <Button 
-            variant="outline" 
-            className="mb-2 md:mb-4 py-1.5 px-2.5 sm:py-2 sm:px-3 text-sm h-auto"
-            onClick={navigateUp}
-          >
-            <ChevronLeft className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-            Назад
-          </Button>
-        )}
+      {isLoading ? (
+        <FileBrowserSkeleton />
+      ) : (
+        <div className="p-2 sm:p-4">
+          {/* Кнопка "Назад", если мы в папке */}
+          {currentFolderId && (
+            <Button
+              variant="outline"
+              className="mb-2 md:mb-4 py-1.5 px-2.5 sm:py-2 sm:px-3 text-sm h-auto"
+              onClick={navigateUp}
+            >
+              <ChevronLeft className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+              Назад
+            </Button>
+          )}
 
-        <Tabs defaultValue="Блоки">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-            <TabsList className="mb-3 md:mb-4 w-full md:w-auto h-auto py-1 px-1">
-              <TabsTrigger value="Блоки" className="flex gap-1 items-center py-1.5 px-2.5 sm:py-2 sm:px-3 text-sm">
-                <GridIcon className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="ml-1">Блоки</span>
-              </TabsTrigger>
-              <TabsTrigger value="Сетка" className="flex gap-1 items-center py-1.5 px-2.5 sm:py-2 sm:px-3 text-sm">
-                <Rows3Icon className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="ml-1">Сетка</span>
-              </TabsTrigger>
-            </TabsList>
-
-            <div className="flex gap-2 items-center text-xs sm:text-sm w-full md:w-auto mb-3 md:mb-0">
-              <Label htmlFor="type-select" className="whitespace-nowrap">Фильтр по типам</Label>
-              <Select
-                value={type}
-                onValueChange={(newType) =>
-                  setType(newType as Doc<"files">["type"])
-                }
-              >
-                <SelectTrigger
-                  id="type-select"
-                  className="w-full md:w-[150px] h-auto py-1.5 px-2.5 sm:py-2 sm:px-3 text-sm"
+          <Tabs defaultValue="Блоки">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+              <TabsList className="mb-3 md:mb-4 w-full md:w-auto h-auto py-1 px-1">
+                <TabsTrigger
+                  value="Блоки"
+                  className="flex gap-1 items-center py-1.5 px-2.5 sm:py-2 sm:px-3 text-sm"
                 >
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Все типы</SelectItem>
-                  <SelectItem value="image">Изображение</SelectItem>
-                  <SelectItem value="csv">CSV</SelectItem>
-                  <SelectItem value="pdf">PDF</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+                  <GridIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="ml-1">Блоки</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="Сетка"
+                  className="flex gap-1 items-center py-1.5 px-2.5 sm:py-2 sm:px-3 text-sm"
+                >
+                  <Rows3Icon className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="ml-1">Сетка</span>
+                </TabsTrigger>
+              </TabsList>
 
-          <TabsContent value="Блоки">
-            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
-              {!deletedOnly &&
-                folders?.map(
-                  (folder, index) =>
-                    folder && (
-                      <FolderCard
-                        key={`folder-${folder._id}-${index}`}
-                        folder={folder}
-                        onClick={() => setCurrentFolderId(folder._id)}
-                        
-                      />
-                    )
-                )}
-
-              {modifiedFiles.map((file, index) => (
-                <FileCard 
-                  key={`file-${file._id}-${index}`} 
-                  file={file}               
-                />
-              ))}
+              <div className="flex gap-2 items-center text-xs sm:text-sm w-full md:w-auto mb-3 md:mb-0">
+                <Label htmlFor="type-select" className="whitespace-nowrap">
+                  Фильтр по типам
+                </Label>
+                <Select
+                  value={type}
+                  onValueChange={(newType) =>
+                    setType(newType as Doc<"files">["type"])
+                  }
+                >
+                  <SelectTrigger
+                    id="type-select"
+                    className="w-full md:w-[150px] h-auto py-1.5 px-2.5 sm:py-2 sm:px-3 text-sm"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Все типы</SelectItem>
+                    <SelectItem value="image">Изображение</SelectItem>
+                    <SelectItem value="csv">CSV</SelectItem>
+                    <SelectItem value="pdf">PDF</SelectItem>
+                    <SelectItem value="docx">Word (.docx)</SelectItem>
+                    <SelectItem value="doc">Word (.doc)</SelectItem>
+                    <SelectItem value="pptx">PowerPoint (.pptx)</SelectItem>
+                    <SelectItem value="unknown">Прочее</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </TabsContent>
 
-          <TabsContent value="Сетка">
-            <div className="overflow-x-auto -mx-2 px-2">
-              <DataTable columns={columns} data={modifiedFiles} />
-            </div>
-          </TabsContent>
-        </Tabs>
-      </div>
-    )}
+            <TabsContent value="Блоки">
+              <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+                {!deletedOnly &&
+                  folders?.map(
+                    (folder, index) =>
+                      folder && (
+                        <FolderCard
+                          key={`folder-${folder._id}-${index}`}
+                          folder={folder}
+                          onClick={() => setCurrentFolderId(folder._id)}
+                        />
+                      )
+                  )}
+
+                {modifiedFiles.map((file, index) => (
+                  <FileCard key={`file-${file._id}-${index}`} file={file} />
+                ))}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="Сетка">
+              <div className="overflow-x-auto -mx-2 px-2">
+                <DataTable columns={columns} data={modifiedFiles} />
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      )}
 
       {!isLoading && query && files.length === 0 && folders?.length === 0 && (
         <PlaceholderEmptyQuery />

@@ -92,3 +92,40 @@
     @apply bg-background text-foreground;
   }
 }
+
+.editor {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.tiptap {
+  padding: 2px 12px;
+  outline: none;
+  width: 100%;
+}
+
+/* For mobile */
+.floating-threads {
+  display: none;
+}
+
+/* For desktop */
+.anchored-threads {
+  display: block;
+  max-width: 300px;
+  width: 100%;
+  position: absolute;
+  right: 12px;
+}
+
+@media (max-width: 640px) {
+  .floating-threads {
+    display: block;
+  }
+
+  .anchored-threads {
+    display: none;
+  }
+}

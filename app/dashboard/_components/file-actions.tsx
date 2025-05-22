@@ -135,14 +135,28 @@ export function FileCardActions({
             <Share2Icon className="w-4 h-4" />
             Создать страницу
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link
-              href={`/dashboard/files/${file._id}`}
-              className="flex gap-1 items-center text-blue-600"
-            >
-              <span className="w-4 h-4">🤖</span> Открыть с AI
-            </Link>
-          </DropdownMenuItem>
+          {/* Кнопка "Открыть с AI" только для поддерживаемых форматов */}
+          {["text", "md", "markdown"].includes(file.type) && (
+            <DropdownMenuItem asChild>
+              <Link
+                href={`/dashboard/files/${file._id}`}
+                className="flex gap-1 items-center text-blue-600"
+              >
+                <span className="w-4 h-4">🤖</span> Открыть с AI
+              </Link>
+            </DropdownMenuItem>
+          )}
+          {/* Кнопка "Посмотреть" для остальных форматов */}
+          {!["text", "md", "markdown"].includes(file.type) && (
+            <DropdownMenuItem asChild>
+              <Link
+                href={`/dashboard/files/${file._id}`}
+                className="flex gap-1 items-center text-blue-600"
+              >
+                <span className="w-4 h-4">👁️</span> Посмотреть
+              </Link>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuSeparator />
           <Protect
             condition={(check) => {

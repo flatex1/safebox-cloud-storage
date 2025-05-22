@@ -12,6 +12,7 @@ import {
   GanttChartIcon,
   ImageIcon,
   PackageIcon,
+  HelpCircleIcon,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -34,7 +35,23 @@ const TYPE_ICONS = {
   csv: <GanttChartIcon className="w-5 h-5 sm:w-6 sm:h-6" />,
   text: <FileTextIcon className="w-5 h-5 sm:w-6 sm:h-6" />,
   archive: <PackageIcon className="w-5 h-5 sm:w-6 sm:h-6" />,
+  docx: <FileTextIcon className="w-5 h-5 sm:w-6 sm:h-6" />,
+  doc: <FileTextIcon className="w-5 h-5 sm:w-6 sm:h-6" />,
+  pptx: <FileTextIcon className="w-5 h-5 sm:w-6 sm:h-6" />,
+  unknown: <HelpCircleIcon className="w-5 h-5 sm:w-6 sm:h-6" />,
 } as const;
+
+const TYPE_LABELS: Record<string, string> = {
+  image: "Изображение",
+  pdf: "PDF",
+  csv: "CSV",
+  text: "Текст",
+  archive: "Архив",
+  docx: "Word (.docx)",
+  doc: "Word (.doc)",
+  pptx: "PowerPoint (.pptx)",
+  unknown: "Прочее",
+};
 
 const FilePreview = ({
   type,
@@ -57,11 +74,18 @@ const FilePreview = ({
   }
 
   return (
-    <div className="opacity-60 w-12 h-12 sm:w-16 sm:h-16">
+    <div className="flex flex-col items-center justify-center opacity-60 w-12 h-12 sm:w-16 sm:h-16 mx-auto">
       {type === "csv" && <GanttChartIcon className="w-full h-full" />}
       {type === "pdf" && <FileTextIcon className="w-full h-full" />}
       {type === "text" && <FileTextIcon className="w-full h-full" />}
       {type === "archive" && <PackageIcon className="w-full h-full" />}
+      {(type === "docx" ||
+        type === "doc" ||
+        type === "pptx") && <FileTextIcon className="w-full h-full" />}
+      {type === "unknown" && <HelpCircleIcon className="w-full h-full" />}
+      <span className="text-xs text-gray-400 mt-1 text-center">
+        {TYPE_LABELS[type] || "Файл"}
+      </span>
     </div>
   );
 };

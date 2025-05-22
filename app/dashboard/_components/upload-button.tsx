@@ -60,13 +60,13 @@ export function UploadButton({
     if (!orgId) return;
 
     const postUrl = await generateUploadUrl();
-    const fileType = values.file[0].type;
+    const mimeType = values.file[0].type;
     const fileSize = values.file[0].size;
 
     if (typeof postUrl === "string") {
       const result = await fetch(postUrl, {
         method: "POST",
-        headers: { "Content-Type": fileType },
+        headers: { "Content-Type": mimeType },
         body: values.file[0],
       });
 
@@ -83,14 +83,21 @@ export function UploadButton({
         "text/plain": "text",
         "application/x-zip-compressed": "archive",
         "application/x-compressed": "archive",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+          "docx",
+        "application/msword": "doc",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+          "pptx",
+        "Unknown": "unknown",
       };
+      const fileType = types[mimeType] || "unknown";
 
       try {
         await createFile({
           name: values.title,
           fileId: storageId,
           orgId,
-          type: types[fileType],
+          type: fileType,
           folderId: currentFolderId
             ? (currentFolderId as Id<"folders">)
             : undefined,

@@ -6,7 +6,11 @@ export const fileTypes = v.union(
   v.literal("csv"),
   v.literal("pdf"),
   v.literal("archive"),
-  v.literal("text")
+  v.literal("text"),
+  v.literal("docx"),
+  v.literal("doc"),
+  v.literal("pptx"),
+  v.literal("unknown")
 );
 export const roles = v.union(v.literal("Администратор"), v.literal("Участник"));
 

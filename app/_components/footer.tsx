@@ -1,15 +1,10 @@
-'use client'
-
+"use client";
 
 import { Separator } from "@radix-ui/react-separator";
 import { motion } from "framer-motion";
-import {
-  Blocks,
-  CreditCard,
-  Handshake,
-  Scale
-} from "lucide-react";
+import { Blocks, CreditCard, Handshake, Scale } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const items = [
   {
@@ -45,6 +40,13 @@ const items = [
 ];
 
 export function Footer() {
+  const pathname = usePathname();
+  const isDashboardPage = pathname.startsWith("/dashboard");
+  
+  if (isDashboardPage) {
+    return null;
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 50 }}
@@ -78,11 +80,17 @@ export function Footer() {
                 Twitter
               </Link>{" "}
               •{" "}
-              <Link className="hover:text-foreground/90" href="https://github.com/flatex1">
+              <Link
+                className="hover:text-foreground/90"
+                href="https://github.com/flatex1"
+              >
                 Github
               </Link>{" "}
               •{" "}
-              <Link className="hover:text-foreground/90" href="https://github.com/flatex1">
+              <Link
+                className="hover:text-foreground/90"
+                href="https://github.com/flatex1"
+              >
                 Discord
               </Link>
             </p>
@@ -105,7 +113,10 @@ export function Footer() {
                       initial={{ opacity: 0, x: 20 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
-                      transition={{ duration: 0.3, delay: 0.1 * (linkIndex + 1) }}
+                      transition={{
+                        duration: 0.3,
+                        delay: 0.1 * (linkIndex + 1),
+                      }}
                       key={name}
                     >
                       <Link
