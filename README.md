@@ -29,6 +29,7 @@
   <img src="https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js" />
   <img src="https://img.shields.io/badge/Convex-FF6B6B?style=for-the-badge&logo=data:image/png;base64,..." alt="Convex" />
   <img src="https://img.shields.io/badge/Clerk-4B4B4B?style=for-the-badge&logo=clerk&logoColor=white" alt="Clerk" />
+  <img src="https://img.shields.io/badge/Liveblocks-000000?style=for-the-badge&logo=liveblocks&logoColor=white" alt="Liveblocks" />
   <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" />
 </p>
