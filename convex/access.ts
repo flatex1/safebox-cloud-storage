@@ -3,7 +3,10 @@ import { MutationCtx, QueryCtx } from "./_generated/server";
 import { Doc, Id } from "./_generated/dataModel";
 
 // Проверка доступа к организации
-export async function hasAccessToOrg(ctx: QueryCtx | MutationCtx, orgId: string) {
+export async function hasAccessToOrg(
+  ctx: QueryCtx | MutationCtx,
+  orgId: string
+) {
   const identity = await ctx.auth.getUserIdentity();
 
   if (!identity) {
@@ -23,7 +26,8 @@ export async function hasAccessToOrg(ctx: QueryCtx | MutationCtx, orgId: string)
 
   const hasAccess =
     user.orgIds.some((item) => item.orgId === orgId) ||
-    user.tokenIdentifier.includes(orgId);
+    user.tokenIdentifier.includes(orgId) ||
+    user._id === orgId;
 
   if (!hasAccess) {
     return null;

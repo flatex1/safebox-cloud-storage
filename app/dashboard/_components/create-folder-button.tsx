@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { api } from "@/convex/_generated/api";
-import { useOrganization } from "@clerk/nextjs";
+import { useOrganization, useUser } from "@clerk/nextjs";
 import { useMutation } from "convex/react";
 import { FolderPlus } from "lucide-react";
 import { useState } from "react";
@@ -47,6 +47,7 @@ export function CreateFolderButton({
 }) {
   const { toast } = useToast();
   const organization = useOrganization();
+  const user = useUser();
   const createFolder = useMutation(api.folders.createFolder);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -70,14 +71,18 @@ export function CreateFolderButton({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      if (!organization.organization?.id) {
-        throw new Error("Организация не выбрана");
+      let orgId: string | undefined = undefined;
+      if (organization.isLoaded && user.isLoaded) {
+        orgId = organization.organization?.id ?? user.user?.id;
+      }
+      if (!orgId) {
+        throw new Error("Не удалось определить организацию или пользователя");
       }
 
       await createFolder({
         name: values.name,
         description: values.description,
-        orgId: organization.organization.id,
+        orgId,
         parentId: currentFolderId || undefined,
       });
 
