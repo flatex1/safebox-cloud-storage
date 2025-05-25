@@ -234,6 +234,7 @@ export const renameFolder = mutation({
   args: {
     folderId: v.id("folders"),
     name: v.string(),
+    description: v.optional(v.string()),
   },
   async handler(ctx, args) {
     const identity = await ctx.auth.getUserIdentity();
@@ -247,7 +248,10 @@ export const renameFolder = mutation({
       throw new ConvexError("Папка не найдена");
     }
 
-    await ctx.db.patch(args.folderId, { name: args.name });
+    await ctx.db.patch(args.folderId, {
+      name: args.name,
+      description: args.description,
+    });
     return { success: true };
   },
 });

@@ -24,6 +24,39 @@ import { Button } from "@/components/ui/button";
 import { FolderCard } from "./folder-card";
 import React from "react";
 import { DashboardHeader } from "./dashboard-header";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
+import { useMutation } from "convex/react";
+import { Pencil, Trash2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
 function FileBrowserSkeleton() {
   return (
@@ -111,6 +144,11 @@ export default function FileBrowser({
   const [folderPath, setFolderPath] = useState<
     Array<{ id: Id<"folders"> | null; name: string }>
   >([{ id: null, name: "Главная" }]);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [folderIdToDelete, setFolderIdToDelete] =
+    useState<Id<"folders"> | null>(null);
+  const { toast } = useToast();
 
   let orgId: string | undefined = undefined;
   if (organization.isLoaded && user.isLoaded) {
@@ -147,6 +185,75 @@ export default function FileBrowser({
     api.folders.getFolderPath,
     currentFolderId ? { folderId: currentFolderId } : "skip"
   );
+
+  const currentFolder = useQuery(
+    api.folders.getFolder,
+    currentFolderId ? { folderId: currentFolderId } : "skip"
+  );
+
+  const renameFolder = useMutation(api.folders.renameFolder);
+  const deleteFolder = useMutation(api.folders.deleteFolder);
+
+  const editFormSchema = z.object({
+    name: z
+      .string()
+      .min(1, "Название обязательно")
+      .max(100, "Не более 100 символов"),
+    description: z.string().max(250, "Не более 250 символов").optional(),
+  });
+  const editForm = useForm<z.infer<typeof editFormSchema>>({
+    resolver: zodResolver(editFormSchema),
+    defaultValues: {
+      name: currentFolder?.name || "",
+      description: currentFolder?.description || "",
+    },
+    values: currentFolder
+      ? {
+          name: currentFolder.name || "",
+          description: currentFolder.description || "",
+        }
+      : undefined,
+  });
+
+  const handleEditSubmit = async (values: z.infer<typeof editFormSchema>) => {
+    if (!currentFolderId) return;
+    try {
+      await renameFolder({
+        folderId: currentFolderId,
+        name: values.name,
+        description: values.description,
+      });
+      toast({
+        title: "Папка обновлена",
+        description: "Название и описание успешно изменены",
+      });
+      setEditDialogOpen(false);
+    } catch {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось обновить папку",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!folderIdToDelete) return;
+    try {
+      await deleteFolder({ folderId: folderIdToDelete, recursive: true });
+      toast({
+        title: "Папка удалена",
+        description: "Папка и всё содержимое удалены",
+      });
+      setDeleteDialogOpen(false);
+    } catch {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось удалить папку",
+        variant: "destructive",
+      });
+    }
+  };
 
   useEffect(() => {
     if (!currentFolderId) {
@@ -205,16 +312,165 @@ export default function FileBrowser({
         <FileBrowserSkeleton />
       ) : (
         <div className="p-2 sm:p-4">
-          {/* Кнопка "Назад", если мы в папке */}
+          {/* Кнопка "Назад", "Редактировать" и "Удалить папку" */}
           {currentFolderId && (
-            <Button
-              variant="outline"
-              className="mb-2 md:mb-4 py-1.5 px-2.5 sm:py-2 sm:px-3 text-sm h-auto"
-              onClick={navigateUp}
-            >
-              <ChevronLeft className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-              Назад
-            </Button>
+            <div className="flex items-center gap-2 mb-2 md:mb-4">
+              <Button
+                variant="outline"
+                className="py-1.5 px-2.5 sm:py-2 sm:px-3 text-sm h-auto"
+                onClick={navigateUp}
+              >
+                <ChevronLeft className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                Назад
+              </Button>
+              <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    title="Редактировать папку"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Редактировать папку</DialogTitle>
+                  </DialogHeader>
+                  <Form {...editForm}>
+                    <form
+                      onSubmit={editForm.handleSubmit(handleEditSubmit)}
+                      className="space-y-4"
+                    >
+                      <FormField
+                        control={editForm.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Название папки</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Новое название папки"
+                                {...field}
+                                autoFocus
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={editForm.control}
+                        name="description"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Описание (необязательно)</FormLabel>
+                            <FormControl>
+                              <textarea
+                                className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none min-h-[80px]"
+                                placeholder="Описание содержимого папки"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Добавьте краткое описание содержимого папки
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <div className="flex items-center p-3 text-sm rounded-md bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="mr-2 flex-shrink-0"
+                        >
+                          <circle cx="12" cy="12" r="10" />
+                          <path d="M12 16v-4" />
+                          <path d="M12 8h.01" />
+                        </svg>
+                        <span>
+                          Папка будет видна всем участникам вашей команды
+                        </span>
+                      </div>
+                      <Button
+                        type="submit"
+                        className="w-full"
+                        disabled={editForm.formState.isSubmitting}
+                      >
+                        {editForm.formState.isSubmitting
+                          ? "Сохранение..."
+                          : "Сохранить"}
+                      </Button>
+                    </form>
+                  </Form>
+                </DialogContent>
+              </Dialog>
+              <Button
+                variant="destructive"
+                size="icon"
+                title="Удалить папку"
+                onClick={() => {
+                  setFolderIdToDelete(currentFolderId);
+                  setDeleteDialogOpen(true);
+                }}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+              <AlertDialog
+                open={deleteDialogOpen}
+                onOpenChange={(open) => {
+                  setDeleteDialogOpen(open);
+                  if (!open) {
+                    setCurrentFolderId(null);
+                    setFolderIdToDelete(null);
+                  }
+                }}
+              >
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Удалить папку?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Вы действительно хотите удалить эту папку?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <div className="flex items-center p-3 my-2 text-sm rounded-md bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="mr-2 flex-shrink-0"
+                    >
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M12 16v-4" />
+                      <path d="M12 8h.01" />
+                    </svg>
+                    <span className="font-semibold">
+                      Все подпапки и файлы внутри будут удалены безвозвратно.
+                    </span>
+                  </div>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Отмена</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete}>
+                      Удалить
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
           )}
 
           <Tabs defaultValue="Блоки">
