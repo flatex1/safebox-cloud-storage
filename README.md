@@ -19,6 +19,7 @@
 - 🚀 Обновления в реальном времени с помощью Convex
 - 👀 Совместный просмотр и редактирование файлов
 - 🤖 AI-ассистент "Ровер" для работы с содержимым файлов
+- 💸 Оплата подписок через ЮКасса
 - 📱 Адаптивный дизайн
 - 🌐 Кроссплатформенная совместимость
 - 🔄 Автоматическая синхронизация
@@ -29,6 +30,7 @@
   <img src="https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js" />
   <img src="https://img.shields.io/badge/Convex-FF6B6B?style=for-the-badge&logo=data:image/png;base64,..." alt="Convex" />
   <img src="https://img.shields.io/badge/Clerk-4B4B4B?style=for-the-badge&logo=clerk&logoColor=white" alt="Clerk" />
+  <img src="https://img.shields.io/badge/Liveblocks-000000?style=for-the-badge&logo=liveblocks&logoColor=white" alt="Liveblocks" />
   <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" />
 </p>
@@ -74,13 +76,6 @@ safebox-cloud-storage/
 └── 📂 types/         # Определения типов TypeScript
 ```
 
-## 👨‍💻 Рабочий процесс разработки
-
-1. 🌿 Создайте новую ветку для вашей функции
-2. 💻 Внесите изменения и протестируйте локально
-3. 📤 Отправьте pull request
-4. ✅ Дождитесь проверки и слияния
-
 ## 🚀 Развертывание
 
 ### Развертывание на Vercel
@@ -95,6 +90,9 @@ safebox-cloud-storage/
 npx convex deploy
 
 ## 📚 Дополнительная информация
+<div align="center">
+ <a href="https://deepwiki.com/flatex1/safebox-cloud-storage"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
+</div>
 
 <p align="center">
   <a href="https://nextjs.org/docs">📖 Документация Next.js</a> •
